@@ -1,0 +1,92 @@
+    gsap.to(this.front_plane.scale, {
+      x: 0.5,
+      y: 0.5,
+      duration: 1,
+      ease: "power1.inOut"
+    })
+    gsap.to(this.front_plane.scale, {
+      y: 0.38,
+      x: 0.42,
+      duration: 0.3,
+      delay: 0.9,
+      ease: "none"
+    })
+    gsap.to(this.front_plane.program.uniforms.uProgress, {
+      value: 1,
+      duration: 1.1,
+      ease: "power4.inOut",
+      delay: 0.8
+    })
+    gsap.to(this.front_plane.position, {
+      y: 1.,
+      duration: 1.2,
+      ease: "power4.inOut",
+      delay: 0.87,
+    })
+    gsap.to(this.back_plane.program.uniforms.unblur_p, {
+      value: 1,
+      ease: "power1.inOut",
+      duration: 0.7,
+      delay: 1.2,
+    })
+    gsap.to(this.back_plane.program.uniforms.wave_progress_1, {
+      value: 3.,
+      ease: "power4.inOut",
+      duration: 3.,
+      delay: 0.4,
+    })
+    gsap.to(this.back_plane.program.uniforms.wave_progress_2, {
+      value: 3.,
+      ease: "power4.inOut",
+      duration: 3.,
+      delay: 0.7
+
+    })
+
+
+
+    let tl = gsap.timeline()
+    tl.to(this.front_plane.scale, {
+      x: 0.5,
+      y: 0.5,
+      duration: 1,
+      ease: "power1.inOut"
+    }, "start")
+    tl.to(this.front_plane.scale, {
+      y: 0.38,
+      x: 0.42,
+      duration: 0.3,
+      ease: "none"
+    }, "start+=0.9")
+    tl.to(this.front_plane.program.uniforms.uProgress, {
+      value: 1,
+      duration: 1.1,
+      ease: "power4.inOut",
+      // delay: 0.8
+    }, "start+=0.8")
+    tl.to(this.front_plane.position, {
+      y: 1.,
+      duration: 1.2,
+      ease: "power4.inOut",
+      // delay: 0.87,
+    }, "start+=0.95")
+    tl.to(this.back_plane.program.uniforms.unblur_p, {
+      value: 1,
+      ease: "power1.inOut",
+      duration: 0.7,
+      // delay: 1.2,
+    }, "start+=1.2")
+    tl.to(this.back_plane.program.uniforms.wave_progress_1, {
+      value: 3.,
+      ease: "power4.inOut",
+      duration: 3.,
+      // delay: 0.4,
+    }, "start+=0.4")
+    tl.to(this.back_plane.program.uniforms.wave_progress_2, {
+      value: 3.,
+      ease: "power4.inOut",
+      duration: 3.,
+      // delay: 0.7
+
+    }, "start+=0.7")
+
