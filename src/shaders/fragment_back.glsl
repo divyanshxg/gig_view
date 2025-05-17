@@ -18,9 +18,9 @@ out vec4 fragColor;
 
 
 vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
-    const int radius = 10;
+    const int radius = 3;
     const float pi = 3.1415926;
-    const float sigma = 10.0;
+    const float sigma = 3.0;
 
     vec4 gaussSum = vec4(0.0);
     float weightSum = 0.0;
