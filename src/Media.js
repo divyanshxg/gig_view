@@ -141,7 +141,7 @@ export default class Media {
 
     if (this.gui._title == `effect_1`) {
       this.wave_config = {
-        glow_ease: CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 "),
+        glow_ease: CustomEase.create("custom", "M0,0 C0.044,0.133 0.452,0.067 0.589,0.222 0.728,0.38 0.672,0.648 0.731,0.813 0.779,0.949 0.946,1 1,1 "),
         // glow_ease: CustomEase.create("custom", "M0,0 C0.136,0 0.323,0.009 0.445,0.08 0.566,0.151 0.621,0.283 0.633,0.304 0.679,0.384 0.659,0.68 0.731,0.841 0.78,0.949 0.897,0.953 1,0.953 "),
         glow_delay: 0,
         distortion_delay: 0.65
