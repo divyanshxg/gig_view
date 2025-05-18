@@ -1,15 +1,19 @@
 import "./style.css"
 import { Renderer, Camera, Transform, Plane } from 'ogl'
-
 import html2canvas from "html2canvas-pro";
-// import Image from '../assets/image.jpg'
-import Image1 from '../assets/2.jpg'
-import Image2 from '../assets/3.jpg'
-import Image3 from '../assets/4.jpg'
-import Image4 from '../assets/5.jpg'
 import Media from "./Media"
+import { back_fragment, front_fragment } from "./utils";
+import GUI from "lil-gui";
+import image1 from '../assets/resized/2.jpg'
+import image2 from '../assets/resized/1.jpg'
+import image3 from '../assets/resized/3.jpg'
+import image4 from '../assets/resized/4.jpg'
+import image5 from '../assets/resized/5.jpg'
+import image6 from '../assets/resized/6.jpg'
 export default class App {
-  constructor(container, snapshot_img) {
+  constructor(container, snapshot_img, index, gui) {
+    this.gui = gui
+    this.elemIndex = index
     this.img = snapshot_img
     this.container = container
     this.createRenderer()
@@ -72,6 +76,10 @@ export default class App {
       geometry: this.planeGeometry,
       img: this.img,
       gl: this.gl,
+      back_fragment: back_fragment[this.elemIndex],
+      front_fragment: front_fragment[this.elemIndex],
+      gui: this.gui,
+      elemIndex: this.elemIndex
     })
   }
 
@@ -137,54 +145,99 @@ export default class App {
     window.addEventListener('mousewheel', this.onWheel.bind(this))
     window.addEventListener('wheel', this.onWheel.bind(this))
 
-    window.addEventListener('mousedown', this.onTouchDown.bind(this))
+    // window.addEventListener('mousedown', this.onTouchDown.bind(this))
     window.addEventListener('mousemove', this.onTouchMove.bind(this))
     window.addEventListener('mouseup', this.onTouchUp.bind(this))
 
-    window.addEventListener('touchstart', this.onTouchDown.bind(this))
+    // window.addEventListener('touchstart', this.onTouchDown.bind(this))
     window.addEventListener('touchmove', this.onTouchMove.bind(this))
     window.addEventListener('touchend', this.onTouchUp.bind(this))
   }
 }
 
 
+const gui = new GUI()
 
-html2canvas(document.querySelector(".card"), {
-  scale: 5,
-  useCORS: true,
-  logging: false,
-  imageTimeout: 30000,
-  backgroundColor: null,
-  ignoreElements: (element) => {
-    return element.classList.contains('do-not-capture');
-  },
-  onclone: (clonedDoc) => {
-    const timestamp = clonedDoc.getElementById('timestamp');
-    if (timestamp) {
-      timestamp.textContent = new Date().toLocaleString();
+const gui_obj = {
+  img: image1
+}
+
+// gui.add(gui_obj, "img", {
+//   Image1: image1,
+//   Image2: image2,
+//   Image3: image3,
+//   Image4: image4,
+//   Image5: image5,
+//   Image6: image6
+// }).onChange(v => {
+//   console.log(v)
+//   const img_elem = document.querySelectorAll(".image_container img")
+//   for (let i = 0; i < img_elem.length; i++) {
+//     img_elem[i].src = v
+//   }
+//
+// })
+
+function run() {
+
+  html2canvas(document.querySelector(".card"), {
+    scale: 5,
+    useCORS: true,
+    logging: false,
+    imageTimeout: 30000,
+    backgroundColor: null,
+    ignoreElements: (element) => {
+      return element.classList.contains('do-not-capture');
+    },
+    onclone: (clonedDoc) => {
+      const timestamp = clonedDoc.getElementById('timestamp');
+      if (timestamp) {
+        timestamp.textContent = new Date().toLocaleString();
+      }
     }
-  }
-}).then(canvas => {
-  // 1. Get the data URL from the canvas:
-  const imageDataURL = canvas.toDataURL('image/jpeg');
+  }).then(canvas => {
+    // 1. Get the data URL from the canvas:
+    const imageDataURL = canvas.toDataURL('image/jpeg');
 
-  // 2. Create a new <img> element:
-  const imgElement = new Image();
+    // 2. Create a new <img> element:
+    const imgElement = new Image();
 
-  // 3. Set the src of the <img> element to the data URL:
-  imgElement.src = imageDataURL;
+    // 3. Set the src of the <img> element to the data URL:
+    imgElement.src = imageDataURL;
 
-  imgElement.onload = () => {
-
-
-    const app = new App(document.querySelector(".canvas_container"), imgElement.src)
-
-  }
+    imgElement.onload = () => {
 
 
+      const container = Array.from(document.querySelectorAll(".container"))
 
-}).catch(error => {
-  console.error("Error capturing the card:", error);
-});
+      const app_instances = []
+      for (let i = 0; i < container.length; i++) {
+        const effect = gui.addFolder(`effect_${i}`)
+        const app = new App(container[i].querySelector(".canvas_container"), imgElement.src, i, effect)
+
+        app_instances.push(app)
+      }
+
+      for (let i = 0; i < container.length; i++) {
+
+        const reset_btn = container[i].querySelector(".reset_anim_btn")
+
+        reset_btn.addEventListener("click", (e) => {
+          app_instances[i].onTouchDown()
+        })
+
+      }
 
 
+    }
+
+
+
+  }).catch(error => {
+    console.error("Error capturing the card:", error);
+  });
+
+
+}
+
+run()

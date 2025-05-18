@@ -16,7 +16,22 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
+
+.container>.reset_anim_btn {
+  position: absolute;
+  left: 50;
+  top: 0%;
+  width: 4rem;
+  height: 4rem;
+  background-color: #F29052;
+  padding: 10px;
+  border-radius: 15px;
+  /* transform: translateX(-50%); */
+}
+
+/* .container>.reset_anim_btn>svg {} */
 
 .canvas_container {
   height: 80vh;
@@ -64,7 +79,7 @@ body {
   font-family: "Libre Baskerville", serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 1.1vw;
+  font-size: 1.3rem;
   margin-bottom: 6px;
   opacity: 0.9;
 }
@@ -72,7 +87,7 @@ body {
 .card_content_subheading {
   font-family: sans-serif;
   font-weight: 500;
-  font-size: 0.65vw;
+  font-size: 0.8rem;
   opacity: 0.7;
   text-align: center;
 }
@@ -86,6 +101,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  font-size: 1rem;
 }
 
 .svg {
@@ -98,8 +114,8 @@ body {
 }
 
 .svg>svg {
-  width: 10px;
-  height: 10px;
+  width: 0.5rem;
+  height: 0.5rem;
   /* transform: translateY(-25%); */
   /* background-color: red; */
   /* transform: translateY(-2%); */
@@ -108,7 +124,7 @@ body {
 .btn_text {
   font-family: sans-serif;
   font-weight: 200;
-  font-size: 0.9vw;
+  font-size: 1rem;
   text-align: center;
   color: black;
 }
@@ -125,6 +141,17 @@ img {
 
 }
 
-/* canvas { */
-/*   position: absolute; */
-/* } */
+@media screen and (max-width: 700px) {
+
+  .container>.reset_anim_btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3rem;
+    height: 3rem;
+    background-color: #F29052;
+    padding: 10px;
+    border-radius: 15px;
+    /* transform: translateX(-50%); */
+  }
+}

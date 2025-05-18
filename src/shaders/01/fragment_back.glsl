@@ -10,6 +10,8 @@ uniform float uProgress;
 uniform float unblur_p;
 uniform float wave_progress_1;
 uniform float wave_progress_2;
+uniform float uGlowIntensity;
+uniform float uDistortionIntensity;
 
 
 in vec2 vUv;
@@ -103,7 +105,7 @@ vec2 uv = vec2(
     
 
 
-    float decress_effect = 0.022;
+    float decress_effect = uDistortionIntensity; // 0.01 -> 0.1
     float distortion_top_to_bottom =  smoothstep(0.01,0.2,vUv.y );
     vec3 tex = texture(uTexture, uv- decress_effect* d_distortion * distortion_top_to_bottom).rgb;
 
@@ -119,8 +121,9 @@ vec2 uv = vec2(
 
     vec3 final = mix(tex , blured , 1.0 - unblur_p);
 
-    fragColor = vec4( final * (1.0 + 0.7*d_glow), 1.0);
+    fragColor = vec4( final * (1.0 + uGlowIntensity*d_glow), 1.0);
   
 
   // gl_FragColor =  vec4(vUv , 0.0, 1.0); // Output red color
 }
+

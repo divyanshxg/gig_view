@@ -1,44 +1,62 @@
 import { Mesh, Plane, Program, Texture, Vec2 } from "ogl";
 import vertex from './shaders/vertex.glsl';
-import fragment_back from './shaders/fragment_back.glsl';
-import fragment_front from './shaders/fragment_front.glsl';
+import { CustomEase } from 'gsap/CustomEase'
+
 
 import gsap from "gsap";
+gsap.registerPlugin(CustomEase)
 
 export default class Media {
-  constructor({ renderer, scene, geometry, img, gl }) {
+  constructor({ renderer, scene, geometry, img, gl, back_fragment, front_fragment, gui, elemIndex }) {
+
+    this.gui = gui
+
+
+    this.guiObj = {
+    }
+    if (this.gui._title == `effect_0`) {
+      this.guiObj = {
+        ...this.guiObj,
+        uDistortionIntensity: 0.02,
+        uGlowIntensity: 0.7
+
+      }
+
+      gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
+        this.back_plane.program.uniforms.uGlowIntensity.value = v
+      })
+      gui.add(this.guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
+        this.back_plane.program.uniforms.uDistortionIntensity.value = v
+      })
+    }
+    if (this.gui._title == `effect_1`) {
+      this.guiObj = {
+        ...this.guiObj,
+        uDistortionIntensity: 0.02,
+        uGlowIntensity: 0.7
+
+      }
+
+      gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
+        this.back_plane.program.uniforms.uGlowIntensity.value = v
+      })
+      gui.add(this.guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
+        this.back_plane.program.uniforms.uDistortionIntensity.value = v
+      })
+    }
     this.renderer = renderer;
     this.scene = scene;
     this.img = img;
     this.geometry = geometry;
     this.gl = gl;
     this.image_dimensions = new Vec2(0, 0); // Initialize image dimensions
-    this.back_plane = this.createMesh(fragment_back)
+    this.back_plane = this.createMesh(back_fragment)
     this.back_plane.position.z -= 0.1
-    this.front_plane = this.createMesh(fragment_front);
+    this.front_plane = this.createMesh(front_fragment);
     this.createTimeline()
 
-    // this.front_plane.scale.x *= 1 / 2.5;
-    // this.front_plane.scale.y *= 1 / 2.5;
   }
 
-  // updateTexture(newImg) {
-  //   const texture = new Texture(this.gl, {
-  //     minFilter: this.gl.LINEAR,
-  //     magFilter: this.gl.LINEAR
-  //   });
-  //
-  //   const image = new Image();
-  //   image.onload = () => {
-  //     texture.image = image;
-  //     this.image_dimensions.set(image.naturalWidth, image.naturalHeight);
-  //     if (this.front_plane && this.front_plane.program) {
-  //       this.front_plane.program.uniforms.uImage.value = this.image_dimensions;
-  //     }
-  //   };
-  //   image.src = newImg;
-  //
-  // }
   createMesh(fragment) {
     let div = 1.5;
     const mesh_scale = new Vec2(9 / div, 19.5 / div);
@@ -90,6 +108,12 @@ export default class Media {
         wave_progress_2: {
           value: 0
         },
+        uGlowIntensity: {
+          value: this.guiObj.uGlowIntensity
+        },
+        uDistortionIntensity: {
+          value: this.guiObj.uDistortionIntensity
+        }
 
       }
     });
@@ -108,6 +132,24 @@ export default class Media {
 
   createTimeline() {
 
+    this.wave_config = {
+      glow_delay: 0.7,
+      glow_ease: "power3.inOut",
+      distortion_delay: 0.8
+    }
+    // if (this.gui._title == `effect_0`) { }
+
+    if (this.gui._title == `effect_1`) {
+      this.wave_config = {
+        glow_ease: CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 "),
+        // glow_ease: CustomEase.create("custom", "M0,0 C0.136,0 0.323,0.009 0.445,0.08 0.566,0.151 0.621,0.283 0.633,0.304 0.679,0.384 0.659,0.68 0.731,0.841 0.78,0.949 0.897,0.953 1,0.953 "),
+        glow_delay: 0,
+        distortion_delay: 0.65
+
+      }
+    }
+
+    // const custom = CustomEase
     let x = this.front_plane.scale.x * 1 / 2.5;
     let y = this.front_plane.scale.y * 1 / 2.5;
 
@@ -145,17 +187,17 @@ export default class Media {
     }, "start+=1.2")
     this.tl.to(this.back_plane.program.uniforms.wave_progress_1, {
       value: 3.,
-      ease: "power4.inOut",
-      duration: 3.,
+      ease: this.wave_config.glow_ease,
+      duration: 2.5,
       // delay: 0.4,
-    }, "start+=0.4")
+    }, `start+=${this.wave_config.glow_delay}`)
     this.tl.to(this.back_plane.program.uniforms.wave_progress_2, {
       value: 3.,
       ease: "power4.inOut",
       duration: 3.,
       // delay: 0.7
 
-    }, "start+=0.7")
+    }, `start+=${this.wave_config.distortion_delay}`)
 
 
     this.tl.paused()
@@ -167,15 +209,15 @@ export default class Media {
     let temp = {
       value: 0
     }
-    this.tl.play()
-    gsap.to(temp, {
-      value: 1,
-      duration: 3.,
-      onComplete: () => {
-        console.log("hi")
-        this.tl.reverse()
-      }
-    })
+    this.tl.restart()
+    // gsap.to(temp, {
+    //   value: 1,
+    //   duration: 3.,
+    //   onComplete: () => {
+    //     console.log("hi")
+    //     this.tl.reverse()
+    //   }
+    // })
 
 
     // gsap.to(this.front_plane.scale, {
