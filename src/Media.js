@@ -14,12 +14,26 @@ export default class Media {
 
     this.guiObj = {
     }
-    if (this.gui._title == `effect_0`) {
+    if (this.gui._title == `effect_0` || this.gui._title == "effect_2") {
       this.guiObj = {
         ...this.guiObj,
         uDistortionIntensity: 0.02,
         uGlowIntensity: 0.7
 
+      }
+
+      gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
+        this.back_plane.program.uniforms.uGlowIntensity.value = v
+      })
+      gui.add(this.guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
+        this.back_plane.program.uniforms.uDistortionIntensity.value = v
+      })
+    }
+    if (this.gui._title == `effect_3`) {
+      this.guiObj = {
+        ...this.guiObj,
+        uDistortionIntensity: 0.05,
+        uGlowIntensity: 1.5
       }
 
       gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
@@ -65,6 +79,8 @@ export default class Media {
       minFilter: this.gl.LINEAR_MIPMAP_LINEAR,
       magFilter: this.gl.LINEAR,
       generateMipmaps: true,
+      wrapS: this.gl.MIRRORED_REPEAT,
+      wrapT: this.gl.MIRRORED_REPEAT,
     });
 
     const image = new Image();
@@ -113,7 +129,11 @@ export default class Media {
         },
         uDistortionIntensity: {
           value: this.guiObj.uDistortionIntensity
+        },
+        uTextureStretch: {
+          value: 0
         }
+
 
       }
     });
@@ -132,73 +152,126 @@ export default class Media {
 
   createTimeline() {
 
-    this.wave_config = {
+    // Default timeline configuration
+    this.timeline_config = {
+      // Existing wave configuration
       glow_delay: 0.7,
       glow_ease: "power3.inOut",
-      distortion_delay: 0.8
-    }
-    // if (this.gui._title == `effect_0`) { }
+      distortion_delay: 0.5,
 
-    if (this.gui._title == `effect_1`) {
-      this.wave_config = {
-        glow_ease: CustomEase.create("custom", "M0,0 C0.044,0.133 0.452,0.067 0.589,0.222 0.728,0.38 0.672,0.648 0.731,0.813 0.779,0.949 0.946,1 1,1 "),
-        // glow_ease: CustomEase.create("custom", "M0,0 C0.136,0 0.323,0.009 0.445,0.08 0.566,0.151 0.621,0.283 0.633,0.304 0.679,0.384 0.659,0.68 0.731,0.841 0.78,0.949 0.897,0.953 1,0.953 "),
+      // Front plane scale first sequence
+      front_scale_first_duration: 1,
+      front_scale_first_ease: "power1.inOut",
+      front_scale_first_timeline: "start",
+
+      // Front plane scale second sequence
+      front_scale_second_duration: 0.3,
+      front_scale_second_ease: "none",
+      front_scale_second_timeline: "start+=0.9",
+
+      // Front plane uProgress
+      front_progress_duration: 1.1,
+      front_progress_ease: "power4.inOut",
+      front_progress_timeline: "start+=0.8",
+
+      // Front plane position y
+      front_position_y_duration: 1.2,
+      front_position_y_ease: "power4.inOut",
+      front_position_y_timeline: "start+=0.95",
+
+      // Back plane unblur_p
+      back_unblur_duration: 0.7,
+      back_unblur_ease: "power1.inOut",
+      back_unblur_timeline: "start+=1.2",
+
+      // Back plane wave_progress_1
+      back_wave_progress_1_duration: 2.5,
+      back_wave_progress_1_ease: "power3.inOut", // Default, will be overridden if needed
+      back_wave_progress_1_timeline: "start+=0.7", // Uses glow_delay
+
+      // Back plane wave_progress_2
+      back_wave_progress_2_duration: 3.0,
+      back_wave_progress_2_ease: "power4.inOut",
+      back_wave_progress_2_timeline: "start+=0.5" // Uses distortion_delay
+    };
+
+    if (this.gui._title === "effect_1") {
+      let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
+      this.timeline_config = {
+        ...this.timeline_config,
+        glow_ease: ease,
         glow_delay: 0,
-        distortion_delay: 0.65
-
-      }
+        distortion_delay: 0.45,
+        back_wave_progress_1_ease: ease,
+        back_wave_progress_1_timeline: "start+=0",
+      };
     }
 
-    // const custom = CustomEase
-    let x = this.front_plane.scale.x * 1 / 2.5;
-    let y = this.front_plane.scale.y * 1 / 2.5;
+    if (this.gui._title === "effect_3") {
+      let stretch_ease = CustomEase.create("custom", "M0,0 C0.048,0 0.195,0.086 0.29,0.272 0.432,0.551 0.579,0.969 0.73,0.969 0.817,0.969 0.861,0 0.921,-0.285 0.954,-0.439 0.977,0 1,0 ");
+      let ease = CustomEase.create("custom", "M0,0 C0.069,0.21 0.274,0.039 0.507,0.25 0.592,0.327 0.582,0.612 0.644,0.753 0.67,0.813 0.7,0.874 0.751,0.911 0.845,0.981 0.97,1 1,1 ")
+      this.timeline_config = {
+        ...this.timeline_config,
+        glow_ease: ease,
+        glow_delay: 0.,
+        distortion_delay: -0.0,
+        back_wave_progress_1_ease: ease,
+        back_wave_progress_1_timeline: "start+=0.32",
+        back_wave_progress_2_timeline: "start+=0.32",
+        back_wave_progress_stretch_ease: stretch_ease,
+        back_wave_stretch_timeline: "start+=0.95",
+        back_wave_stretch_duration: 0.8
+      };
+    }
 
-
-    this.tl = gsap.timeline()
+    this.tl = gsap.timeline();
     this.tl.to(this.front_plane.scale, {
       x: 0.5,
       y: 0.5,
-      duration: 1,
-      ease: "power1.inOut"
-    }, "start")
+      duration: this.timeline_config.front_scale_first_duration,
+      ease: this.timeline_config.front_scale_first_ease
+    }, this.timeline_config.front_scale_first_timeline);
     this.tl.to(this.front_plane.scale, {
       y: 0.38,
       x: 0.42,
-      duration: 0.3,
-      ease: "none"
-    }, "start+=0.9")
+      duration: this.timeline_config.front_scale_second_duration,
+      ease: this.timeline_config.front_scale_second_ease
+    }, this.timeline_config.front_scale_second_timeline);
     this.tl.to(this.front_plane.program.uniforms.uProgress, {
       value: 1,
-      duration: 1.1,
-      ease: "power4.inOut",
-      // delay: 0.8
-    }, "start+=0.8")
+      duration: this.timeline_config.front_progress_duration,
+      ease: this.timeline_config.front_progress_ease
+    }, this.timeline_config.front_progress_timeline);
     this.tl.to(this.front_plane.position, {
-      y: 1.,
-      duration: 1.2,
-      ease: "power4.inOut",
-      // delay: 0.87,
-    }, "start+=0.95")
+      y: 1.0,
+      duration: this.timeline_config.front_position_y_duration,
+      ease: this.timeline_config.front_position_y_ease
+    }, this.timeline_config.front_position_y_timeline);
     this.tl.to(this.back_plane.program.uniforms.unblur_p, {
       value: 1,
-      ease: "power1.inOut",
-      duration: 0.7,
-      // delay: 1.2,
-    }, "start+=1.2")
+      duration: this.timeline_config.back_unblur_duration,
+      ease: this.timeline_config.back_unblur_ease
+    }, this.timeline_config.back_unblur_timeline);
     this.tl.to(this.back_plane.program.uniforms.wave_progress_1, {
-      value: 3.,
-      ease: this.wave_config.glow_ease,
-      duration: 2.5,
-      // delay: 0.4,
-    }, `start+=${this.wave_config.glow_delay}`)
+      value: 3.0,
+      ease: this.timeline_config.back_wave_progress_1_ease,
+      duration: this.timeline_config.back_wave_progress_1_duration
+    }, this.timeline_config.back_wave_progress_1_timeline);
     this.tl.to(this.back_plane.program.uniforms.wave_progress_2, {
-      value: 3.,
-      ease: "power4.inOut",
-      duration: 3.,
-      // delay: 0.7
+      value: 3.0,
+      ease: this.timeline_config.back_wave_progress_2_ease,
+      duration: this.timeline_config.back_wave_progress_2_duration
+    }, this.timeline_config.back_wave_progress_2_timeline);
 
-    }, `start+=${this.wave_config.distortion_delay}`)
 
+    if (this.gui._title === "effect_3") {
+      this.tl.to(this.back_plane.program.uniforms.uTextureStretch, {
+        value: 1.,
+        duration: this.timeline_config.back_wave_stretch_duration,
+        ease: this.timeline_config.back_wave_progress_stretch_ease
+      }, this.timeline_config.back_wave_stretch_timeline)
+
+    }
 
     this.tl.paused()
 
@@ -210,60 +283,6 @@ export default class Media {
       value: 0
     }
     this.tl.restart()
-    // gsap.to(temp, {
-    //   value: 1,
-    //   duration: 3.,
-    //   onComplete: () => {
-    //     console.log("hi")
-    //     this.tl.reverse()
-    //   }
-    // })
-
-
-    // gsap.to(this.front_plane.scale, {
-    //   x: 0.5,
-    //   y: 0.5,
-    //   duration: 0.8,
-    //   ease: "power1.inOut"
-    // })
-    // gsap.to(this.front_plane.position, {
-    //   y: -0.05,
-    //   duration: 0.8,
-    //   ease: "power4.inOut",
-    //   delay: 0.3
-    // })
-    // gsap.to(this.front_plane.scale, {
-    //   y: 0.6,
-    //   duration: 0.3,
-    //   delay: 0.6,
-    //   ease: "power1.inOut"
-    // })
-    // gsap.to(this.front_plane.program.uniforms.uProgress, {
-    //   value: 1,
-    //   duration: 0.8,
-    //   ease: "power4.inOut",
-    //   delay: 0.5
-    // })
-    // gsap.to(this.front_plane.position, {
-    //   y: 3,
-    //   duration: 0.8,
-    //   ease: "power4.inOut",
-    //   delay: 0.6,
-    // })
-    ////////////////////////////////////////////////////////////////////
-    // gsap.to(this.front_plane.position, {
-    //   y: -1.,
-    //   duration: 0.4,
-    //   ease: "power1.out",
-    //   delay: 0.5,
-    // })
-    // gsap.to(this.front_plane.scale, {
-    //   y: y - 1.,
-    //   duration: 0.8,
-    //   ease: "power1.out",
-    //   delay: 0.7,
-    // })
-    //
 
   }
 

@@ -46,6 +46,7 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
 
 
 
+
 float sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )
 {
     r.xy = (p.x>0.0)?r.xy : r.zw;
@@ -119,14 +120,17 @@ vec2 uv = vec2(
 
 
     /////////////
-    //Blur 
+    //Progressive Blur
 
 
-    vec3 final = mix(tex , blured , 1.0 - unblur_p);
+    float p = wave_progress_1/3.;
+    float progressive_blur_factor = smoothstep(p-0.2*(1. - p*0.5)- 0.001, p+0.,1.0 - vUv.y );
+    progressive_blur_factor = mix( progressive_blur_factor , 0.0 ,  smoothstep(0.9,1.0, p ) );
+    // float progressive_blur_end = smoothstep(0.0,0.001,vUv.y );
+    vec3 final = mix(tex , blured , progressive_blur_factor);
 
     fragColor = vec4( final * (1.0 + uGlowIntensity*d_glow), 1.0);
   
 
   // gl_FragColor =  vec4(vUv , 0.0, 1.0); // Output red color
 }
-

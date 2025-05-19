@@ -26,15 +26,17 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
 
     vec4 gaussSum = vec4(0.0);
     float weightSum = 0.0;
-    vec2 texelSize = 1.8 / resolution; // Get the size of one pixel
+    vec2 texelSize = 1.0 / resolution; // Get the size of one pixel
 
+    float m = 1.0;
     for (int x = -radius; x <= radius; x++) {
         for (int y = -radius; y <= radius; y++) {
             vec2 offset = vec2(float(x) * texelSize.x, float(y) * texelSize.y);
             vec2 sampleUV = uv + offset;
 
             float weight = exp(-(pow(float(x), 2.0) + pow(float(y), 2.0)) / (2.0 * pow(sigma, 2.0))) / (2.0 * pi * pow(sigma, 2.0));
-            gaussSum += texture(uTexture, sampleUV) * weight;
+            gaussSum += textureLod(uTexture, sampleUV, m) * weight;
+            m = 6.;
             weightSum += weight;
         }
     }
@@ -115,7 +117,7 @@ vec2 uv = vec2(
     float distortion_top_to_bottom =  smoothstep(0.01,0.2,vUv.y );
     vec3 tex = texture(uTexture, uv- decress_effect* d_distortion * distortion_top_to_bottom).rgb;
 
-    float tex_down = 0.15;
+    float tex_down = 0.05;
     vec3 blured = gaus_blur(uTexture , uv- decress_effect* d_distortion * distortion_top_to_bottom , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
 

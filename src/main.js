@@ -209,6 +209,7 @@ function run() {
 
 
       const container = Array.from(document.querySelectorAll(".container"))
+      console.log(container.length)
 
       const app_instances = []
       for (let i = 0; i < container.length; i++) {
