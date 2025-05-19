@@ -12,6 +12,7 @@ uniform float wave_progress_2;
 uniform float uGlowIntensity;
 uniform float uDistortionIntensity;
 uniform float uTextureStretch;
+uniform float uBlurAmount;
 
 
 in vec2 vUv;
@@ -112,7 +113,7 @@ vec2 uv = vec2(
 
     vec3 tex = texture(uTexture,( stretch_uv- decress_effect* vec2(0. ,d_distortion) * distortion_top_to_bottom )  ).rgb;
 
-    float tex_down = 0.025;
+    float tex_down = uBlurAmount;
     vec3 blured = gaus_blur(uTexture , stretch_uv- decress_effect* d_distortion * distortion_top_to_bottom , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
     //Blur 
