@@ -113,7 +113,7 @@ vec2 uv = vec2(
     float decress_effect = uDistortionIntensity; 
     // float distortion_top_to_bottom =  smoothstep(0.0,0.2 ,vUv.y );
     float distortion_top_to_bottom =  smoothstep(0.02,0.05 ,vUv.y );
-    vec3 tex = texture(uTexture, uv- decress_effect* d_distortion * distortion_top_to_bottom).rgb;
+    vec3 tex = texture(uTexture, uv- decress_effect* vec2(0., d_distortion)* distortion_top_to_bottom).rgb;
 
     float tex_down = uBlurAmount;
     vec3 blured = 1.06*gaus_blur(uTexture , uv- decress_effect* d_distortion * distortion_top_to_bottom , vec2(uImage.x * tex_down, uImage.y * tex_down) );
