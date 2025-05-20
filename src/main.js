@@ -5,11 +5,7 @@ import Media from "./Media"
 import { back_fragment, front_fragment } from "./utils";
 import GUI from "lil-gui";
 import image1 from '../assets/resized/2.jpg'
-import image2 from '../assets/resized/1.jpg'
-import image3 from '../assets/resized/3.jpg'
-import image4 from '../assets/resized/4.jpg'
-import image5 from '../assets/resized/5.jpg'
-import image6 from '../assets/resized/6.jpg'
+
 export default class App {
   constructor(container, snapshot_img, index, gui) {
     this.gui = gui
@@ -35,12 +31,14 @@ export default class App {
     this.renderer = new Renderer({
       dpr: 2,
       antialias: true,
+      autoClear: true,
       alpha: true
+
     })
 
     this.gl = this.renderer.gl
-    this.gl.clearColor(0.79607843137, 0.79215686274, 0.74117647058, 1)
-
+    this.gl.clearColor(0.79607843137, 0.79215686274, 0.74117647058, 0.0)
+    //
     this.container.appendChild(this.gl.canvas)
   }
 
@@ -157,87 +155,86 @@ export default class App {
 
 
 const gui = new GUI()
-
-const gui_obj = {
-  img: image1
-}
-
-// gui.add(gui_obj, "img", {
-//   Image1: image1,
-//   Image2: image2,
-//   Image3: image3,
-//   Image4: image4,
-//   Image5: image5,
-//   Image6: image6
-// }).onChange(v => {
-//   console.log(v)
-//   const img_elem = document.querySelectorAll(".image_container img")
-//   for (let i = 0; i < img_elem.length; i++) {
-//     img_elem[i].src = v
-//   }
+const root = document.documentElement;
+// Get the current value of --border-radius (optional, for initial GUI value)
+// const initialBorderRadius = getComputedStyle(root).getPropertyValue('--border-radius').trim();
 //
-// })
+// // An object to hold the value that lil-gui will manipulate
+// const settings = {
+//   borderRadius: parseInt(initialBorderRadius, 10) || 0 // Default to '0px' if not defined
+// };
+//
+// // Add a slider to control the --border-radius variable
+// const borderRadiusControl = gui.add(settings, 'borderRadius')
+//   .name('CSS Border Radius').min(10).max(150)
+//   .onChange((newValue) => {
+//     root.style.setProperty('--border-radius', `${newValue}px`);
+//   });
+//
+// // You might want to initialize the CSS variable with the default GUI value
+// console.log(settings.borderRadius)
+// root.style.setProperty('--border-radius', settings.borderRadius);
+
+
 
 function run() {
 
-  html2canvas(document.querySelector(".card"), {
-    scale: 5,
-    useCORS: true,
-    logging: false,
-    imageTimeout: 30000,
-    backgroundColor: null,
-    ignoreElements: (element) => {
-      return element.classList.contains('do-not-capture');
-    },
-    onclone: (clonedDoc) => {
-      const timestamp = clonedDoc.getElementById('timestamp');
-      if (timestamp) {
-        timestamp.textContent = new Date().toLocaleString();
+
+  const container = Array.from(document.querySelectorAll(".container"))
+  for (let i = 0; i < container.length; i++) {
+    html2canvas(container[i].querySelector(".card"), {
+      scale: 5,
+      useCORS: true,
+      logging: false,
+      imageTimeout: 30000,
+      backgroundColor: null,
+      ignoreElements: (element) => {
+        return element.classList.contains('do-not-capture');
+      },
+      onclone: (clonedDoc) => {
+        const timestamp = clonedDoc.getElementById('timestamp');
+        if (timestamp) {
+          timestamp.textContent = new Date().toLocaleString();
+        }
       }
-    }
-  }).then(canvas => {
-    // 1. Get the data URL from the canvas:
-    const imageDataURL = canvas.toDataURL('image/jpeg');
+    }).then(canvas => {
+      // 1. Get the data URL from the canvas:
+      const imageDataURL = canvas.toDataURL('image/jpeg');
 
-    // 2. Create a new <img> element:
-    const imgElement = new Image();
+      // 2. Create a new <img> element:
+      const imgElement = new Image();
 
-    // 3. Set the src of the <img> element to the data URL:
-    imgElement.src = imageDataURL;
+      console.log(container[i].dataset.container)
 
-    imgElement.onload = () => {
+      imgElement.src = imageDataURL;
+
+      imgElement.onload = () => {
 
 
-      const container = Array.from(document.querySelectorAll(".container"))
-      console.log(container.length)
 
-      const app_instances = []
-      for (let i = 0; i < container.length; i++) {
-        const effect = gui.addFolder(`effect_${i}`)
-        const app = new App(container[i].querySelector(".canvas_container"), imgElement.src, i, effect)
+        const effect = gui.addFolder(`effect_${container[i].dataset.container}`)
+        const app = new App(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect)
 
-        app_instances.push(app)
-      }
 
-      for (let i = 0; i < container.length; i++) {
 
         const reset_btn = container[i].querySelector(".reset_anim_btn")
 
         reset_btn.addEventListener("click", (e) => {
-          app_instances[i].onTouchDown()
+          app.onTouchDown()
         })
+
+
 
       }
 
 
-    }
+
+    }).catch(error => {
+      console.error("Error capturing the card:", error);
+    });
 
 
-
-  }).catch(error => {
-    console.error("Error capturing the card:", error);
-  });
-
+  }
 
 }
 

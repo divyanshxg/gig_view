@@ -10,26 +10,20 @@ export default class Media {
   constructor({ renderer, scene, geometry, img, gl, back_fragment, front_fragment, gui, elemIndex }) {
 
     this.gui = gui
-    this.elementIndex = elemIndex;
 
 
     this.guiObj = {
-      blur: 0.03,
-      uBorderRadius: 0.15,
-
+      blur: 0.03
     }
     gui.add(this.guiObj, "blur").min(0.01).max(0.1).step(0.01).onFinishChange((v) => {
       this.back_plane.program.uniforms.uBlurAmount.value = v
     })
-    gui.add(this.guiObj, "uBorderRadius").min(0.01).max(0.5).step(0.01).onFinishChange((v) => {
-      this.back_plane.program.uniforms.uBorderRadius.value = v
-    })
 
-    if (this.elementIndex == 0 || this.elementIndex == 2) {
+    if (this.gui._title == `effect_0` || this.gui._title == "effect_2") {
       this.guiObj = {
         ...this.guiObj,
         uDistortionIntensity: 0.02,
-        uGlowIntensity: 1.,
+        uGlowIntensity: 1.
 
       }
 
@@ -40,7 +34,7 @@ export default class Media {
         this.back_plane.program.uniforms.uDistortionIntensity.value = v
       })
     }
-    if (this.elementIndex == 3) {
+    if (this.gui._title == `effect_3`) {
       this.guiObj = {
         ...this.guiObj,
         uDistortionIntensity: 0.05,
@@ -54,10 +48,10 @@ export default class Media {
         this.back_plane.program.uniforms.uDistortionIntensity.value = v
       })
     }
-    if (this.elementIndex == 1 || this.elementIndex == 4) {
+    if (this.gui._title == `effect_1` || this.gui._title == "effect_4") {
       this.guiObj = {
         ...this.guiObj,
-        uDistortionIntensity: 0.01,
+        uDistortionIntensity: 0.008,
         uGlowIntensity: 0.7
 
       }
@@ -122,9 +116,6 @@ export default class Media {
         },
         uPlane: {
           value: mesh_scale
-        },
-        uBorderRadius: {
-          value: this.guiObj.uBorderRadius
         },
         uResolution: {
           value: new Vec2(window.innerWidth, window.innerHeight)
@@ -216,7 +207,7 @@ export default class Media {
       back_wave_progress_2_timeline: "start+=0.5" // Uses distortion_delay
     };
 
-    if (this.elementIndex == 1) {
+    if (this.gui._title === "effect_1") {
       let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
       this.timeline_config = {
         ...this.timeline_config,
@@ -227,7 +218,7 @@ export default class Media {
         back_wave_progress_1_timeline: "start+=0",
       };
     }
-    if (this.elementIndex == 4) {
+    if (this.gui._title === "effect_4") {
       let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
       this.timeline_config = {
         ...this.timeline_config,
@@ -270,20 +261,20 @@ export default class Media {
         front_position_three_timeline: `start+=${1.35}`,
 
 
-        //glow wave
-        back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
-        back_wave_progress_1_duration: 3.0, // front_scale_first_duration
+        //glow accumulate
+        back_wave_progress_1_ease: "power2.out",
+        back_wave_progress_1_duration: 2.3, // front_scale_first_duration
         back_wave_progress_1_timeline: `start+=0`,
 
-        //distortion wave
-        back_wave_progress_2_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
-        back_wave_progress_2_duration: 3.0, // front_scale_first_duration
-        back_wave_progress_2_timeline: `start+=0.2`,
+        // reducing glow accumulate
+        back_wave_progress_1_down_ease: "none",
+        back_wave_progress_1_down_duration: 0.02,
+        back_wave_progress_1_down_timeline: `start+=${2.18}`,
 
-        ////glow burst
-        //back_wave_progress_3_ease: CustomEase.create("custom", "M0,0 C0.105,0 0.482,0.159 0.704,0.428 0.88,0.641 1,0.909 1,1 "),
-        //back_wave_progress_3_duration: 1.2, // front_scale_first_duration
-        //back_wave_progress_3_timeline: `start+=${1.6}`,
+        //glow burst
+        back_wave_progress_3_ease: CustomEase.create("custom", "M0,0 C0.105,0 0.482,0.159 0.704,0.428 0.88,0.641 1,0.909 1,1 "),
+        back_wave_progress_3_duration: 1.2, // front_scale_first_duration
+        back_wave_progress_3_timeline: `start+=${1.6}`,
 
 
         back_unblur_duration: 0.7,
@@ -293,7 +284,7 @@ export default class Media {
       };
     }
 
-    if (this.elementIndex == 3) {
+    if (this.gui._title === "effect_3") {
       let stretch_ease = CustomEase.create("custom", "M0,0 C0.048,0 0.195,0.086 0.29,0.272 0.432,0.551 0.579,0.969 0.73,0.969 0.817,0.969 0.861,0 0.921,-0.285 0.954,-0.439 0.977,0 1,0 ");
       let ease = CustomEase.create("custom", "M0,0 C0.069,0.21 0.274,0.039 0.507,0.25 0.592,0.327 0.564,0.591 0.626,0.732 0.652,0.792 0.677,0.838 0.728,0.875 0.822,0.945 0.97,0.915 1,0.915 ")      // let ease = CustomEase.create("custom", "M0,0 C0.069,0.21 0.274,0.039 0.507,0.25 0.592,0.327 0.582,0.612 0.644,0.753 0.67,0.813 0.7,0.874 0.751,0.911 0.845,0.981 0.97,1 1,1 ")
       this.timeline_config = {
@@ -320,13 +311,13 @@ export default class Media {
     }, this.timeline_config.front_scale_first_timeline);
 
     this.tl.to(this.front_plane.position, {
-      y: 0.02,
+      y: 0.04,
       duration: this.timeline_config.front_position_one_duration,
       ease: this.timeline_config.front_position_one_ease
     }, this.timeline_config.front_position_one_timeline);
 
     this.tl.to(this.front_plane.position, {
-      y: -0.00,
+      y: 0.035,
       duration: this.timeline_config.front_position_two_duration,
       ease: this.timeline_config.front_position_two_ease
     }, this.timeline_config.front_position_two_timeline);
@@ -350,7 +341,7 @@ export default class Media {
       ease: this.timeline_config.front_position_three_ease
     }, this.timeline_config.front_position_three_timeline);
 
-    if (this.elementIndex == 4) {
+    if (this.gui._title == "effect_4") {
 
       this.tl.to(this.back_plane.program.uniforms.wave_progress_1, {
         value: 1, // reduce its effect to 3.* 0.18
@@ -364,11 +355,11 @@ export default class Media {
         duration: this.timeline_config.back_wave_progress_1_down_duration
       }, this.timeline_config.back_wave_progress_1_down_timeline);
 
-      this.tl.to(this.back_plane.program.uniforms.wave_progress_2, {
+      this.tl.to(this.back_plane.program.uniforms.wave_progress_3, {
         value: 1.0,
-        ease: this.timeline_config.back_wave_progress_2_ease,
-        duration: this.timeline_config.back_wave_progress_2_duration
-      }, this.timeline_config.back_wave_progress_2_timeline);
+        ease: this.timeline_config.back_wave_progress_3_ease,
+        duration: this.timeline_config.back_wave_progress_3_duration
+      }, this.timeline_config.back_wave_progress_3_timeline);
 
 
     } else {
@@ -393,7 +384,7 @@ export default class Media {
     }, this.timeline_config.back_unblur_timeline);
 
 
-    if (this.elementIndex === 3) {
+    if (this.gui._title === "effect_3") {
       this.tl.to(this.back_plane.program.uniforms.uTextureStretch, {
         value: 1.,
         duration: this.timeline_config.back_wave_stretch_duration,
