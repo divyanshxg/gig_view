@@ -1,9 +1,9 @@
 import { Mesh, Plane, Program, Texture, Vec2 } from "ogl";
 import vertex from './shaders/vertex.glsl';
-import { CustomEase } from 'gsap/CustomEase'
-
-
 import gsap from "gsap";
+import { CustomEase } from 'gsap/CustomEase'
+import getDebugProperties from "./utils/debug";
+import animationTimeline from "./animation_timeline/createTimeline";
 gsap.registerPlugin(CustomEase)
 
 export default class Media {
@@ -12,63 +12,15 @@ export default class Media {
     this.gui = gui
     this.elementIndex = elemIndex;
 
-
     this.guiObj = {
       blur: 0.03,
       uBorderRadius: 0.15,
-
+      uDistortionIntensity: 0.02,
+      uGlowIntensity: 1.,
     }
-    gui.add(this.guiObj, "blur").min(0.01).max(0.1).step(0.01).onFinishChange((v) => {
-      this.back_plane.program.uniforms.uBlurAmount.value = v
-    })
-    gui.add(this.guiObj, "uBorderRadius").min(0.01).max(0.5).step(0.01).onFinishChange((v) => {
-      this.back_plane.program.uniforms.uBorderRadius.value = v
-    })
 
-    if (this.elementIndex == 0 || this.elementIndex == 2) {
-      this.guiObj = {
-        ...this.guiObj,
-        uDistortionIntensity: 0.02,
-        uGlowIntensity: 1.,
 
-      }
 
-      gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
-        this.back_plane.program.uniforms.uGlowIntensity.value = v
-      })
-      gui.add(this.guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
-        this.back_plane.program.uniforms.uDistortionIntensity.value = v
-      })
-    }
-    if (this.elementIndex == 3) {
-      this.guiObj = {
-        ...this.guiObj,
-        uDistortionIntensity: 0.05,
-        uGlowIntensity: 1.5
-      }
-
-      gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
-        this.back_plane.program.uniforms.uGlowIntensity.value = v
-      })
-      gui.add(this.guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
-        this.back_plane.program.uniforms.uDistortionIntensity.value = v
-      })
-    }
-    if (this.elementIndex == 1 || this.elementIndex == 4) {
-      this.guiObj = {
-        ...this.guiObj,
-        uDistortionIntensity: 0.01,
-        uGlowIntensity: 0.7
-
-      }
-
-      gui.add(this.guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
-        this.back_plane.program.uniforms.uGlowIntensity.value = v
-      })
-      gui.add(this.guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
-        this.back_plane.program.uniforms.uDistortionIntensity.value = v
-      })
-    }
     this.renderer = renderer;
     this.scene = scene;
     this.img = img;
@@ -78,13 +30,12 @@ export default class Media {
     this.back_plane = this.createMesh(back_fragment)
     this.back_plane.position.z -= 0.1
     this.front_plane = this.createMesh(front_fragment);
+    this.guiObj = getDebugProperties(gui, this.guiObj, this.back_plane, this.front_plane, this.elementIndex)
     this.createTimeline()
 
   }
 
   createMesh(fragment) {
-    let div = 1.5;
-    const mesh_scale = new Vec2(9 / div, 19.5 / div);
 
     const texture = new Texture(this.gl, {
       minFilter: this.gl.LINEAR_MIPMAP_LINEAR,
@@ -121,7 +72,7 @@ export default class Media {
           value: this.image_dimensions, // Pass the *instance*
         },
         uPlane: {
-          value: mesh_scale
+          value: new Vec2(9, 19.5)
         },
         uBorderRadius: {
           value: this.guiObj.uBorderRadius
@@ -153,9 +104,6 @@ export default class Media {
         uBlurAmount: {
           value: this.guiObj.blur // 0.01- 0.03
         },
-
-
-
       }
     });
 
@@ -164,8 +112,6 @@ export default class Media {
       program: program
     });
 
-    // mesh.position.z -= 1.
-    // mesh.scale.set(mesh_scale.x, mesh_scale.y, 1); // Use the local variable
     mesh.setParent(this.scene);
 
     return mesh; // Very important to return the mesh!
@@ -173,244 +119,14 @@ export default class Media {
 
   createTimeline() {
 
-    // Default timeline configuration
-    this.timeline_config = {
-      // Existing wave configuration
-      glow_delay: 0.7,
-      glow_ease: "power3.inOut",
-      distortion_delay: 0.5,
-
-      // Front plane scale first sequence
-      front_scale_first_duration: 1,
-      front_scale_first_ease: "power1.inOut",
-      front_scale_first_timeline: "start",
-
-      // Front plane scale second sequence
-      front_scale_second_duration: 0.3,
-      front_scale_second_ease: "none",
-      front_scale_second_timeline: "start+=0.9",
-
-      // Front plane uProgress
-      front_progress_duration: 1.1,
-      front_progress_ease: "power4.inOut",
-      front_progress_timeline: "start+=0.8",
-
-      // Front plane position y
-      front_position_y_duration: 1.2,
-      front_position_y_ease: "power4.inOut",
-      front_position_y_timeline: "start+=0.95",
-
-      // Back plane unblur_p
-      back_unblur_duration: 0.7,
-      back_unblur_ease: "power1.inOut",
-      back_unblur_timeline: "start+=1.2",
-
-      // Back plane wave_progress_1
-      back_wave_progress_1_duration: 2.5,
-      back_wave_progress_1_ease: "power3.inOut", // Default, will be overridden if needed
-      back_wave_progress_1_timeline: "start+=0.7", // Uses glow_delay
-
-      // Back plane wave_progress_2
-      back_wave_progress_2_duration: 3.0,
-      back_wave_progress_2_ease: "power4.inOut",
-      back_wave_progress_2_timeline: "start+=0.5" // Uses distortion_delay
-    };
-
-    if (this.elementIndex == 1) {
-      let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
-      this.timeline_config = {
-        ...this.timeline_config,
-        glow_ease: ease,
-        glow_delay: 0,
-        distortion_delay: 0.45,
-        back_wave_progress_1_ease: ease,
-        back_wave_progress_1_timeline: "start+=0",
-      };
-    }
-    if (this.elementIndex == 4) {
-      let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
-      this.timeline_config = {
-        ...this.timeline_config,
-        glow_ease: ease,
-        glow_delay: 0,
-        distortion_delay: 0.45,
-        back_wave_progress_1_ease: ease,
-        back_wave_progress_1_timeline: "start+=0",
-
-
-        // Updating 
-        // try using custom ease for every thing
-        front_scale_first_duration: 1.3,
-        front_scale_ease: CustomEase.create("custom", "M0,0 C0.105,0 0.482,0.159 0.704,0.428 0.88,0.641 1,0.909 1,1 "),
-
-        //going a little up
-        front_position_one_duration: 1.1,
-        front_position_one_ease: "power2.in",
-        front_position_one_timeline: `start+=0`,
-
-        //going a little down
-        front_position_two_duration: 0.2,
-        front_position_two_ease: "power2.in",
-        front_position_two_timeline: `start+=${1.1}`,
-
-        // Texture Stretch
-        front_progress_duration: 2.2 - 1.3,
-        front_progress_ease: CustomEase.create("custom", "M0,0 C0.109,0.196 0.537,0.781 1,1 "),
-        front_progress_timeline: `start+=1.3`,
-
-        // scaling down
-        front_scale_second_duration: 1.5 - 1.3,
-        front_scale_second_ease: CustomEase.create("custom", "M0,0 C0.109,0.196 0.537,0.781 1,1 "),
-        front_scale_second_timeline: `start+=${1.3}`,
-
-
-        //going out of view (up)
-        front_position_three_duration: 2.3 - 1.5,
-        front_position_three_ease: CustomEase.create("custom", "M0,0 C0.076,0 0.317,0.031 0.5,0.2 0.774,0.452 1,0.889 1,1 "),
-        front_position_three_timeline: `start+=${1.35}`,
-
-
-        //glow wave
-        back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
-        back_wave_progress_1_duration: 3.0, // front_scale_first_duration
-        back_wave_progress_1_timeline: `start+=0`,
-
-        //distortion wave
-        back_wave_progress_2_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
-        back_wave_progress_2_duration: 3.0, // front_scale_first_duration
-        back_wave_progress_2_timeline: `start+=0.2`,
-
-        ////glow burst
-        //back_wave_progress_3_ease: CustomEase.create("custom", "M0,0 C0.105,0 0.482,0.159 0.704,0.428 0.88,0.641 1,0.909 1,1 "),
-        //back_wave_progress_3_duration: 1.2, // front_scale_first_duration
-        //back_wave_progress_3_timeline: `start+=${1.6}`,
-
-
-        back_unblur_duration: 0.7,
-        back_unblur_ease: "none",
-        back_unblur_timeline: `start+=${2.0}`
-
-      };
-    }
-
-    if (this.elementIndex == 3) {
-      let stretch_ease = CustomEase.create("custom", "M0,0 C0.048,0 0.195,0.086 0.29,0.272 0.432,0.551 0.579,0.969 0.73,0.969 0.817,0.969 0.861,0 0.921,-0.285 0.954,-0.439 0.977,0 1,0 ");
-      let ease = CustomEase.create("custom", "M0,0 C0.069,0.21 0.274,0.039 0.507,0.25 0.592,0.327 0.564,0.591 0.626,0.732 0.652,0.792 0.677,0.838 0.728,0.875 0.822,0.945 0.97,0.915 1,0.915 ")      // let ease = CustomEase.create("custom", "M0,0 C0.069,0.21 0.274,0.039 0.507,0.25 0.592,0.327 0.582,0.612 0.644,0.753 0.67,0.813 0.7,0.874 0.751,0.911 0.845,0.981 0.97,1 1,1 ")
-      this.timeline_config = {
-        ...this.timeline_config,
-        glow_ease: ease,
-        glow_delay: 0.,
-        distortion_delay: -0.0,
-        back_wave_progress_1_ease: ease,
-        back_wave_progress_1_timeline: "start+=0.32",
-        back_wave_progress_2_timeline: "start+=0.32",
-        back_wave_progress_stretch_ease: stretch_ease,
-        back_wave_stretch_timeline: "start+=0.95",
-        back_wave_stretch_duration: 0.8
-      };
-    }
-
-    this.tl = gsap.timeline();
-
-    this.tl.to(this.front_plane.scale, {
-      x: 0.4,
-      y: 0.4,
-      duration: this.timeline_config.front_scale_first_duration,
-      ease: this.timeline_config.front_scale_first_ease
-    }, this.timeline_config.front_scale_first_timeline);
-
-    this.tl.to(this.front_plane.position, {
-      y: 0.02,
-      duration: this.timeline_config.front_position_one_duration,
-      ease: this.timeline_config.front_position_one_ease
-    }, this.timeline_config.front_position_one_timeline);
-
-    this.tl.to(this.front_plane.position, {
-      y: -0.00,
-      duration: this.timeline_config.front_position_two_duration,
-      ease: this.timeline_config.front_position_two_ease
-    }, this.timeline_config.front_position_two_timeline);
-
-    this.tl.to(this.front_plane.program.uniforms.uProgress, {
-      value: 2.,
-      duration: this.timeline_config.front_progress_duration,
-      ease: this.timeline_config.front_progress_ease
-    }, this.timeline_config.front_progress_timeline);
-
-    this.tl.to(this.front_plane.scale, {
-      y: 0.37,
-      x: 0.35,
-      duration: this.timeline_config.front_scale_second_duration,
-      ease: this.timeline_config.front_scale_second_ease
-    }, this.timeline_config.front_scale_second_timeline);
-
-    this.tl.to(this.front_plane.position, {
-      y: 1,
-      duration: this.timeline_config.front_position_three_duration,
-      ease: this.timeline_config.front_position_three_ease
-    }, this.timeline_config.front_position_three_timeline);
-
-    if (this.elementIndex == 4) {
-
-      this.tl.to(this.back_plane.program.uniforms.wave_progress_1, {
-        value: 1, // reduce its effect to 3.* 0.18
-        ease: this.timeline_config.back_wave_progress_1_ease,
-        duration: this.timeline_config.back_wave_progress_1_duration
-      }, this.timeline_config.back_wave_progress_1_timeline);
-
-      this.tl.to(this.back_plane.program.uniforms.wave_progress_1, {
-        value: 0.0, // reduce its effect to 3.* 0.18
-        ease: this.timeline_config.back_wave_progress_1_down_ease,
-        duration: this.timeline_config.back_wave_progress_1_down_duration
-      }, this.timeline_config.back_wave_progress_1_down_timeline);
-
-      this.tl.to(this.back_plane.program.uniforms.wave_progress_2, {
-        value: 1.0,
-        ease: this.timeline_config.back_wave_progress_2_ease,
-        duration: this.timeline_config.back_wave_progress_2_duration
-      }, this.timeline_config.back_wave_progress_2_timeline);
-
-
-    } else {
-      this.tl.to(this.back_plane.program.uniforms.wave_progress_1, {
-        value: 1, // reduce its effect to 3.* 0.18
-        ease: this.timeline_config.back_wave_progress_1_ease,
-        duration: this.timeline_config.back_wave_progress_1_duration
-      }, this.timeline_config.back_wave_progress_1_timeline);
-
-      this.tl.to(this.back_plane.program.uniforms.wave_progress_2, {
-        value: 1.0,
-        ease: this.timeline_config.back_wave_progress_2_ease,
-        duration: this.timeline_config.back_wave_progress_2_duration
-      }, this.timeline_config.back_wave_progress_2_timeline);
-
-    }
-
-    this.tl.to(this.back_plane.program.uniforms.unblur_p, {
-      value: 1,
-      duration: this.timeline_config.back_unblur_duration,
-      ease: this.timeline_config.back_unblur_ease
-    }, this.timeline_config.back_unblur_timeline);
-
-
-    if (this.elementIndex === 3) {
-      this.tl.to(this.back_plane.program.uniforms.uTextureStretch, {
-        value: 1.,
-        duration: this.timeline_config.back_wave_stretch_duration,
-        ease: this.timeline_config.back_wave_progress_stretch_ease
-      }, this.timeline_config.back_wave_stretch_timeline)
-
-    }
-    //
+    this.tl = animationTimeline(this.front_plane, this.back_plane, this.elementIndex)
     this.tl.paused()
 
   }
+  onResize() { }
 
   onClick() {
 
-    let temp = {
-      value: 0
-    }
     this.tl.restart()
 
   }
