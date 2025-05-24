@@ -1,7 +1,11 @@
 #version 300 es
 precision mediump float;
 
+// Definitions
+#define PI 3.1415926
 #define pow2(x) (x * x)
+
+
 uniform sampler2D uTexture;
 uniform vec2 uImage;
 uniform vec2 uPlane;
@@ -16,36 +20,14 @@ uniform float uDistortionIntensity;
 uniform float uBlurAmount;
 uniform float uBorderRadius;
 uniform float uGlowRadius;
-uniform float uRippleProgress;
-uniform float uRippleWidth;
-
 
 
 in vec2 vUv;
 in vec3 vPos;
-in vec3 vColor;
 out vec4 fragColor;
 
-// Define RGB color constants using vec3 (a 3-component vector, typically for colors)
-#define RED vec3(1.0, 0.0, 0.0)     // Defines 'RED' as a vec3 representing red color (R=1, G=0, B=0)
-#define GREEN vec3(0.0, 1.0, 0.0)   // Defines 'GREEN' as a vec3 representing green color (R=0, G=1, B=0)
-#define BLUE vec3(0.0, 0.0, 1.0)    // Defines 'BLUE' as a vec3 representing blue color (R=0, G=0, B=1)
-#define WHITE vec3(1.0)             // Defines 'WHITE' as a vec3 representing white color (R=1, G=1, B=1). Shorthand for vec3(1.0, 1.0, 1.0).
-
-#define PI 3.1415926535
-
-float map(float min1, float max1, float value, float min2, float max2)
-{
-    float d2 = max2 - min2;        
-    float d1 = max1 - min1;         
-    float sizeRatio = d2 / d1;      
-    return (value - min1) * sizeRatio + min2; 
-                                             
-}
-
-float floorTo(float val, float snap)
-{
-    return floor(val / snap) * snap; 
+vec2 centerScaleUV(vec2 UV, vec2 factor) {
+    return (UV - vec2(0.5)) * factor + vec2(0.5);
 }
 
 
@@ -119,7 +101,6 @@ vec2 uv = vec2(
     d = 1.0 - length(normalized_uv - vec2(0., 0.45*2.));// reusing variable d
 
   float glow_size = smoothstep(0.0, 0.5, wave_progress_1) * (1.0 - smoothstep(0.7, 1.0, wave_progress_1));
-    // float d1 = smoothstep(-t -0.15 - 0.2*glow_size, -t, d);
     float d1 = smoothstep(-t -0.15 - 0.3*uGlowRadius , -t, d);
     float d2 = smoothstep(-t , -t+0.15 + 0.3*uGlowRadius , d);
     float d_glow = d1-d2;
@@ -127,39 +108,72 @@ vec2 uv = vec2(
 
 
 // Wave 2 - Distortion Wave 
+    float force = 0.04;
+    float thickness = 0.045;
+    float feathering = 0.1 + wave_progress_2/10.;
+    float aberrationOffset = 0.02;
 
-    t = wave_progress_2*3. - 1.5; // max value is 2.5
-    // t = uRippleProgress *3. - 1.5;
-    d = 1.0 - length(normalized_uv - vec2(0., 0.9));// reusing variable d
 
-    d1 = smoothstep(-t -0.15 , -t, d);
-    d2 = smoothstep(-t , -t+0.15  , d);
+    float pos = wave_progress_2;
 
-    float d_distortion = d1-d2;
+    float aspectRatio = uPlane.x/uPlane.y;
 
-    float decress_effect = uDistortionIntensity; 
+    vec2 scalingFactor = vec2(aspectRatio, 1.0);
 
-    vec2 distortion_offset = d_distortion * normalize(normalized_uv - vec2(0., 0.9)) * decress_effect;
-    distortion_offset = vec2(0.);
-    vec3 tex = texture(uTexture, uv- distortion_offset).rgb;
+    scalingFactor *= 2.0;
+    scalingFactor *= 1.0 - thickness - feathering; 
 
+    float diagonal = sqrt(pow(aspectRatio, 2.0) + 1.0);
+
+    scalingFactor /= diagonal; 
+    vec2 scaledUV = centerScaleUV(vUv , scalingFactor);
+
+    vec2 displacement = normalize(scaledUV - vec2(0.5 , 1.0)) * force;
+
+    float distance_v = 0.4*distance(scaledUV, vec2(0.5, 1.0));
+
+    float innerBound = smoothstep(
+        pos - thickness - feathering, // start fading in before inner edge
+        pos - thickness,              // fully opaque at inner edge
+        distance_v
+    );
+
+    float outerBound = smoothstep(
+        pos - feathering,  // start fading out
+        pos,               // fully invisible at outer edge
+        distance_v
+    );
+
+    float shapeMask = innerBound - outerBound;
+
+    // float rChannel = texture(uTexture, screenUV - (displacement - aberrationOffset) * shapeMask).x;
+    // float bChannel = texture(uTexture, screenUV - displacement * shapeMask).y;
+    // float gChannel = texture(uTexture, screenUV - (displacement + aberrationOffset) * shapeMask).z;
+    float rChannel = texture(uTexture, uv - (displacement - aberrationOffset) * shapeMask).x;
+    float bChannel = texture(uTexture, uv - displacement * shapeMask).y;
+    float gChannel = texture(uTexture, uv - (displacement + aberrationOffset) * shapeMask).z;
+
+    vec3 color = vec3(rChannel, bChannel, gChannel);
+
+    vec3 tex_color = texture(uTexture, uv - (displacement - aberrationOffset) * shapeMask).xyz;
+
+
+    vec2 distortion_offset = vec2(0.0);
+
+    // vec3 tex = texture(uTexture, uv - distortion_offset).rgb;
+    vec3 tex = tex_color;
 
     float tex_down = uBlurAmount;
+    // vec3 blured = 1.06*gaus_blur(uTexture , uv- decress_effect* d_distortion * distortion_top_to_bottom , vec2(uImage.x * tex_down, uImage.y * tex_down) );
     vec3 blured = 1.06*gaus_blur(uTexture , uv, vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
-      float p = wave_progress_1;
-    float progressive_blur_factor = smoothstep(p-0.25 , p-0.05,1.0 - vUv.y );
-    progressive_blur_factor = mix( progressive_blur_factor , 0.0 ,  smoothstep(0.6,0.8, p ) );
-
-
-    vec3 final = mix(tex, blured , progressive_blur_factor );
+    vec3 final = mix(tex , blured , 1.0 - unblur_p);
 
 
 
     fragColor = vec4( final * (1.0 + (2.2*d_glow )*max(vUv.y,0.35) ), 1.0);
     // fragColor = vec4( final + uGlowRadius, 1.0);
 
-    // fragColor = vec4(vColor ,1.0);
 
     // fragColor = vec4(step(0.45 + 0.033 ,vPos.yyy), 1.0);
 }

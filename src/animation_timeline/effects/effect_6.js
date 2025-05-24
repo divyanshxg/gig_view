@@ -54,16 +54,28 @@ export default {
   back_wave_progress_1_duration: 3.0, // front_scale_first_duration
   back_wave_progress_1_timeline: `start+=0`,
 
+  // glow Radius
+  glow_radius_ease: CustomEase.create("custom", "M0,0 C0,0.082 0.156,1 0.322,1 0.409,1 0.568,1.068 0.66,0.911 0.745,0.764 0.67,0.116 0.866,0.116 0.999,0.116 0.951,0.1 1,0.1 "),
+  glow_radius_duration: 3.0,
+  glow_radius_timeline: "start+=0",
+
   //distortion wave
-  back_wave_progress_2_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
-  back_wave_progress_2_duration: 3., // front_scale_first_duration
+  // back_wave_progress_2_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
+  back_wave_progress_2_ease: "power4.in",
+  back_wave_progress_2_duration: 3.0, // front_scale_first_duration
   back_wave_progress_2_timeline: `start+=0.2`,
 
 
   // unblur
   back_unblur_duration: 0.7,
   back_unblur_ease: "none",
-  back_unblur_timeline: `start+=${2.0}`
+  back_unblur_timeline: `start+=${2.0}`,
+
+
+  // notch animation
+  notch_scale_duration: 2.3 - 1.5 + 0.3,
+  notch_scale_ease: CustomEase.create("custom", "M0,0 C0,0.096 0.249,0.699 0.5,0.7 0.749,0.7 1,0.097 1,0 "),
+  notch_scale_timeline: `start+=1.35`
 
 };
 

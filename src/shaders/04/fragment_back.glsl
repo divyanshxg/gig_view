@@ -1,5 +1,6 @@
 #version 300 es
 precision mediump float;
+
 #define pow2(x) (x * x)
 uniform sampler2D uTexture;
 uniform vec2 uImage;
@@ -7,12 +8,13 @@ uniform vec2 uPlane;
 uniform vec2 uResolution;
 uniform float uProgress;
 uniform float unblur_p;
-uniform float wave_progress_1;
-uniform float wave_progress_2;
+uniform float wave_progress_1; 
+uniform float wave_progress_2; 
+uniform float wave_progress_3; 
 uniform float uGlowIntensity;
 uniform float uDistortionIntensity;
-uniform float uTextureStretch;
 uniform float uBlurAmount;
+uniform float uBorderRadius;
 
 
 in vec2 vUv;
@@ -27,7 +29,7 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
 
     vec4 gaussSum = vec4(0.0);
     float weightSum = 0.0;
-    vec2 texelSize = 1.0/ resolution; // Get the size of one pixel
+    vec2 texelSize = 1.0 / resolution; // Get the size of one pixel
 
     float m = 1.0;
     for (int x = -radius; x <= radius; x++) {
@@ -37,14 +39,13 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
 
             float weight = exp(-(pow(float(x), 2.0) + pow(float(y), 2.0)) / (2.0 * pow(sigma, 2.0))) / (2.0 * pi * pow(sigma, 2.0));
             gaussSum += textureLod(uTexture, sampleUV, m) * weight;
-            m = 6.;
+            m = 7.;
             weightSum += weight;
         }
     }
 
     return (gaussSum / weightSum).rgb;
 }
-
 
 
 float sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )
@@ -65,7 +66,7 @@ void main(void) {
   
 
   float d = length(normalized_uv);
-  d = sdRoundedBox(normalized_uv , vec2(uPlane.x/uPlane.y,1.) , vec4(0.1));
+  d = sdRoundedBox(normalized_uv , vec2(uPlane.x/uPlane.y,1.) , vec4( uBorderRadius ));
 
   d = step(0.0,d);
   d = 1.0-d ;
@@ -86,47 +87,41 @@ vec2 uv = vec2(
     );
 
 
-
-// Wave 1 GLOW Wave
-    float t = wave_progress_1 - 1.5; // max value is 3.
+// Wave 1 GLOW Accumulation
+    float t = wave_progress_1*3.  - 1.5; // max value is 3.
     d = 1.0 - length(normalized_uv - vec2(0., 1.0));// reusing variable d
 
-
-    float d1 = smoothstep(-t -wave_progress_1/2.4, -t, d);
-    float d2 = smoothstep(-t , -t+0.2, d);
+    // here time means wave_progress_1 which goes from 0 to 1
+    // stat 50% time grow
+    // end 20% reduce
+  float glow_size = smoothstep(0.0, 0.5, wave_progress_1) * (1.0 - smoothstep(0.7, 1.0, wave_progress_1));
+    float d1 = smoothstep(-t -0.15 - 0.2*glow_size, -t, d);
+    float d2 = smoothstep(-t , -t+0.15, d);
     float d_glow = d1-d2;
 
 
+
 // Wave 2 - Distortion Wave 
-    t = wave_progress_2 - 1.5; // max value is 3.
+    t = wave_progress_2*3. - 1.5; // max value is 2.5
     d = 1.0 - length(normalized_uv - vec2(0., 1.0));// reusing variable d
 
-    d1 = smoothstep(-t -wave_progress_1/2.4, -t, d); 
-    d2 = smoothstep(-t , -t+0.2, d);                 
+    d1 = smoothstep(-t -0.15 , -t, d);
+    d2 = smoothstep(-t , -t+0.15, d);
 
     float d_distortion = d1-d2;
 
-    float decress_effect = uDistortionIntensity; // 0.01 -> 0.1
-    float distortion_top_to_bottom =  smoothstep(0.01,0.2,vUv.y );
-
-    vec2 stretch_uv = vec2(uv.x, uv.y/(1.+uTextureStretch/8.) );
-
-    vec3 tex = texture(uTexture,( stretch_uv- decress_effect* vec2(0. ,d_distortion) * distortion_top_to_bottom )  ).rgb;
+    float decress_effect = uDistortionIntensity; 
+    // float distortion_top_to_bottom =  smoothstep(0.0,0.2 ,vUv.y );
+    float distortion_top_to_bottom =  smoothstep(0.02,0.05 ,vUv.y );
+    vec3 tex = texture(uTexture, uv- decress_effect* vec2(0., d_distortion)* distortion_top_to_bottom).rgb;
 
     float tex_down = uBlurAmount;
-    vec3 blured = gaus_blur(uTexture , stretch_uv- decress_effect* d_distortion * distortion_top_to_bottom , vec2(uImage.x * tex_down, uImage.y * tex_down) );
+    vec3 blured = 1.06*gaus_blur(uTexture , uv- decress_effect* d_distortion * distortion_top_to_bottom , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
-    //Blur 
-    float p = wave_progress_1/3.;
-    p = smoothstep(0.2,1.0 , p);
-    float progressive_blur_factor = smoothstep(p-0.2*(1. - p*0.5)- 0.001, p+0.,1.0 - vUv.y );
+    vec3 final = mix(tex , blured , 1.0 - unblur_p);
 
-    progressive_blur_factor = mix( progressive_blur_factor , 0.0 ,  smoothstep(0.7,0.9, p ) );
 
-    vec3 final = mix(tex , blured , progressive_blur_factor );
 
-    float glow_persistence = (3.0 - wave_progress_1)/3.;
-    fragColor = vec4( final * (1.0 + uGlowIntensity*d_glow * glow_persistence ), 1.0);
-  
-
+    fragColor = vec4( final * (1.0 + (2.2*(1.0 - wave_progress_1)*d_glow )), 1.0);
 }
+

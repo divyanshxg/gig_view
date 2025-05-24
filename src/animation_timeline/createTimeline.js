@@ -4,11 +4,13 @@ import effect1 from './effects/effect_1.js'
 import effect2 from './effects/effect_2.js'
 import effect3 from './effects/effect_3.js'
 import effect4 from './effects/effect_4.js'
+import effect5 from './effects/effect_5.js'
+import effect6 from './effects/effect_6.js'
 
 
-const effects = [effect0, effect1, effect2, effect3, effect4]
+const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6]
 
-export default function animationTimeline(front_plane, back_plane, index) {
+export default function animationTimeline(front_plane, back_plane, notch, index) {
 
   let tl = gsap.timeline()
 
@@ -53,43 +55,38 @@ export default function animationTimeline(front_plane, back_plane, index) {
     ease: timeline_config.front_position_three_ease
   }, timeline_config.front_position_three_timeline);
 
-  if (index == 4) {
 
-    tl.to(back_plane.program.uniforms.wave_progress_1, {
+  tl.to(back_plane.program.uniforms.wave_progress_1, {
+    value: 1, // reduce its effect to 3.* 0.18
+    ease: timeline_config.back_wave_progress_1_ease,
+    duration: timeline_config.back_wave_progress_1_duration
+  }, timeline_config.back_wave_progress_1_timeline);
+
+  if (index == 5 || index == 6) {
+    tl.to(back_plane.program.uniforms.uGlowRadius, {
       value: 1, // reduce its effect to 3.* 0.18
-      ease: timeline_config.back_wave_progress_1_ease,
-      duration: timeline_config.back_wave_progress_1_duration
-    }, timeline_config.back_wave_progress_1_timeline);
-
-    tl.to(back_plane.program.uniforms.wave_progress_1, {
-      value: 0.0, // reduce its effect to 3.* 0.18
-      ease: timeline_config.back_wave_progress_1_down_ease,
-      duration: timeline_config.back_wave_progress_1_down_duration
-    }, timeline_config.back_wave_progress_1_down_timeline);
-
-    tl.to(back_plane.program.uniforms.wave_progress_2, {
-      value: 1.0,
-      ease: timeline_config.back_wave_progress_2_ease,
-      duration: timeline_config.back_wave_progress_2_duration
-    }, timeline_config.back_wave_progress_2_timeline);
-
+      ease: timeline_config.glow_radius_ease,
+      duration: timeline_config.glow_radius_duration
+    }, timeline_config.glow_radius_timeline);
 
   }
-  else {
 
-    tl.to(back_plane.program.uniforms.wave_progress_1, {
-      value: 1, // reduce its effect to 3.* 0.18
-      ease: timeline_config.back_wave_progress_1_ease,
-      duration: timeline_config.back_wave_progress_1_duration
-    }, timeline_config.back_wave_progress_1_timeline);
 
-    tl.to(back_plane.program.uniforms.wave_progress_2, {
-      value: 1.0,
-      ease: timeline_config.back_wave_progress_2_ease,
-      duration: timeline_config.back_wave_progress_2_duration
-    }, timeline_config.back_wave_progress_2_timeline);
+  tl.to(back_plane.program.uniforms.wave_progress_2, {
+    value: 1.0,
+    ease: timeline_config.back_wave_progress_2_ease,
+    duration: timeline_config.back_wave_progress_2_duration
+  }, timeline_config.back_wave_progress_2_timeline);
 
-  }
+
+  tl.to(notch.scale, {
+    x: 0.18,
+    y: 0.05,
+    ease: timeline_config.notch_scale_ease,
+    duration: timeline_config.notch_scale_duration
+  }, timeline_config.notch_scale_timeline)
+
+
 
   tl.to(back_plane.program.uniforms.unblur_p, {
     value: 1,
@@ -106,6 +103,32 @@ export default function animationTimeline(front_plane, back_plane, index) {
       ease: timeline_config.back_wave_progress_stretch_ease
     }, timeline_config.back_wave_stretch_timeline)
 
+  }
+
+  if (index == 5) {
+    tl.to(back_plane.program.uniforms.uRippleProgress1, {
+      value: 1,
+      duration: timeline_config.back_wave_ripple_1_progress_duration,
+      ease: timeline_config.back_wave_ripple_1_progress_ease
+    }, timeline_config.back_wave_ripple_1_progress_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleProgress2, {
+      value: 1,
+      duration: timeline_config.back_wave_ripple_2_progress_duration,
+      ease: timeline_config.back_wave_ripple_2_progress_ease
+    }, timeline_config.back_wave_ripple_2_progress_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleProgress3, {
+      value: 1,
+      duration: timeline_config.back_wave_ripple_3_progress_duration,
+      ease: timeline_config.back_wave_ripple_3_progress_ease
+    }, timeline_config.back_wave_ripple_3_progress_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWidth, {
+      value: 1,
+      duration: timeline_config.back_wave_ripple_width_duration,
+      ease: timeline_config.back_wave_ripple_width_ease
+    }, timeline_config.back_wave_ripple_width_timeline)
   }
 
 

@@ -1,10 +1,22 @@
 import "./style.css"
 import html2canvas from "html2canvas-pro";
 import GUI from "lil-gui";
-import App from "./App";
+import gsap from 'gsap'
+import Scene from "./Experience/Scene";
 
 
 const gui = new GUI()
+
+const effects_name = [
+  "initial attemp",
+  "burst transition",
+  "progressive blur",
+  "2nd attempt of burst",
+  "polishing timeline",
+  "normalized distortion",
+  "referecen ripple"
+]
+
 function run() {
   const container = Array.from(document.querySelectorAll(".container"))
   for (let i = 0; i < container.length; i++) {
@@ -28,18 +40,20 @@ function run() {
 
       const imgElement = new Image();
 
-      console.log(container[i].dataset.container)
+      // console.log(container[i].dataset.container)
 
       imgElement.src = imageDataURL;
 
       imgElement.onload = () => {
 
-        const effect = gui.addFolder(`effect_${container[i].dataset.container}`)
-        const app = new App(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect)
+        const effect = gui.addFolder(`${container[i].dataset.container} - ` + effects_name[container[i].dataset.container])
+
+        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect)
         const reset_btn = container[i].querySelector(".reset_anim_btn")
         reset_btn.addEventListener("click", (e) => {
-          app.onTouchDown()
+          scene.onTouchDown()
         })
+        container[i].querySelector(".card").remove()
 
       }
     }).catch(error => {

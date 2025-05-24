@@ -46,7 +46,6 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
 }
 
 
-
 float sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )
 {
     r.xy = (p.x>0.0)?r.xy : r.zw;
@@ -93,7 +92,7 @@ vec2 uv = vec2(
 
 
     float d1 = smoothstep(-t -0.4 , -t, d);
-    float d2 = smoothstep(-t , -t+0.4, d);
+    float d2 = smoothstep(-t , -t+wave_progress_1/3., d);
     float d_glow = d1-d2;
 
 
@@ -101,11 +100,17 @@ vec2 uv = vec2(
     t = wave_progress_2 - 1.5; // max value is 2.5
     d = 1.0 - length(normalized_uv - vec2(0., 1.0));// reusing variable d
 
-
     d1 = smoothstep(-t -0.4 , -t, d);
-    d2 = smoothstep(-t , -t+0.4, d);
+    d2 = smoothstep(-t , -t+wave_progress_1/3., d);
+
     float d_distortion = d1-d2;
-    vec3 wave_1 = vec3(d_distortion);
+    // d1 = smoothstep(-t -0.4 , -t, d);
+    // d2 = smoothstep(-t , -t+0.4, d);
+    // float d_distortion = d1-d2;
+    // vec3 wave_1 = vec3(d_distortion);
+    // //change 
+    //
+    // vec3 wave_1 = vec3(d_distortion);
     
 
 
@@ -125,7 +130,7 @@ vec2 uv = vec2(
 
     vec3 final = mix(tex , blured , 1.0 - unblur_p);
 
-    fragColor = vec4( final * (1.0 + uGlowIntensity*d_glow), 1.0);
+    fragColor = vec4( final * (1.0 + uGlowIntensity*d_glow * (3.0 -wave_progress_1) ), 1.0);
   
 
   // gl_FragColor =  vec4(vUv , 0.0, 1.0); // Output red color

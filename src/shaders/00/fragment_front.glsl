@@ -6,10 +6,8 @@ uniform vec2 uImage;
 uniform vec2 uPlane;
 
 uniform float uProgress;
-uniform float uBorderRadius;
 
 in vec2 vUv;
-in vec3 vPos;
 out vec4 fragColor;
 
 float sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )
@@ -20,7 +18,7 @@ float sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )
     return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r.x;
 }
 
-void main() {
+void main(void) {
 
 
   // Rounded Corners
@@ -32,7 +30,7 @@ void main() {
   
 
   float d = length(normalized_uv);
-  d = sdRoundedBox(normalized_uv , vec2(uPlane.x/uPlane.y,1.) , vec4(uBorderRadius));
+  d = sdRoundedBox(normalized_uv , vec2(uPlane.x/uPlane.y,1.) , vec4(0.1));
 
   d = step(0.0,d);
   d = 1.0-d ;
@@ -58,21 +56,31 @@ vec2 uv = vec2(
 
   float scaleFactor = mix(1.0, 2.0, uProgress); // Scales from 1x to 2x
   vec2 scaledUv = uv;
-  scaledUv.y = uv.y/mix(1.0 , scaleFactor , (vUv.y + uProgress*(uProgress+0.5)*0.4/uProgress  ) );
+  scaledUv.y = uv.y/mix(1.0 , scaleFactor , (vUv.y + uProgress*0.4) );
 
+  // vec3 tex = texture(uTexture , vec2(uv.x, (uv.y +0.5)/(uProgress*7.+1.) - 0.5 )).rgb;
+  // float distortion_effect = smoothstep(0.0,1.5, vUv.y );
+  // vec3 tex = texture(uTexture , vec2(uv.x, uv.y*(1.0 - uProgress*0.5))).rgb;
   vec3 tex = texture(uTexture , scaledUv ).rgb;
 
-  if(uProgress > 0.5){
-    if(vPos.y > (0.45+0.02) ){
-      discard;
-    }
-
-  }
-
-
+  
 
   fragColor =  vec4(tex, 1.0); // Output red color
-  // fragColor = vec4(vPos  ,1.0);
+  // gl_FragColor =  vec4(vUv, 0.0, 1.0); // Output red color
 }
 
+
+  // normalized_uv.x *= uPlane.x/uPlane.y;
+
+  // float dist = roundedRectangleSDF( normalized_uv , min_r , max_r , radius);
+
+  // Apply a threshold to create the border
+  // float threshold = 0.01;
+  // if (abs(dist) < threshold) {
+  //   gl_FragColor= vec4(1.0, 0.0, 0.0, 1.0); // Border color
+  // } else {
+  //   gl_FragColor= vec4(1.0, 1.0, 1.0, 1.0); // Background color
+  // }
+
+  // d = step(uPlane.x/uPlane.y ,d); // full circle at center(normalized)
 
