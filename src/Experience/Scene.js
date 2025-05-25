@@ -129,7 +129,7 @@ export default class Scene {
     this.planeGeometry.height = 1;
 
     const distance = 1 / (2 * Math.tan((this.fov * Math.PI / 180) / 2));
-    this.camera.position.z = distance + 0.01;
+    this.camera.position.z = distance;
 
     // Update medias with new aspect ratio
     if (this.medias) {
