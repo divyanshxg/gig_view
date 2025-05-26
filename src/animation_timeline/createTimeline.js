@@ -105,7 +105,7 @@ export default function animationTimeline(front_plane, back_plane, notch, index)
 
   }
 
-  if (index == 5) {
+  if (index == 5 || index == 6) {
     tl.to(back_plane.program.uniforms.uRippleProgress1, {
       value: 1,
       duration: timeline_config.back_wave_ripple_1_progress_duration,
@@ -129,6 +129,14 @@ export default function animationTimeline(front_plane, back_plane, notch, index)
       duration: timeline_config.back_wave_ripple_width_duration,
       ease: timeline_config.back_wave_ripple_width_ease
     }, timeline_config.back_wave_ripple_width_timeline)
+  }
+
+  if (index == 6) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      value: timeline_config.back_plane_ripple_wave_duration,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
   }
 
 

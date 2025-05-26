@@ -13,8 +13,8 @@ const effects_name = [
   "progressive blur",
   "2nd attempt of burst",
   "polishing timeline",
-  "normalized distortion",
-  "referecen ripple"
+  "vertex distortion",
+  "reference ripple"
 ]
 
 function run() {

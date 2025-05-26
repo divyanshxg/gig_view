@@ -53,7 +53,7 @@ export default function getDebugProperties(gui, guiObj, back_plane, front_plane,
     })
   }
 
-  if (index == 5) {
+  if (index == 6) {
     guiObj = {
       ...guiObj,
       uDistortionIntensity: 0.01,
@@ -65,6 +65,24 @@ export default function getDebugProperties(gui, guiObj, back_plane, front_plane,
     })
     gui.add(guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
       back_plane.program.uniforms.uDistortionIntensity.value = v
+    })
+  }
+  if (index == 5) {
+    guiObj = {
+      ...guiObj,
+      uDistortionIntensity: 0.01,
+      uGlowIntensity: 0.7,
+      uFallOff: 0.31
+    }
+
+    gui.add(guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
+      back_plane.program.uniforms.uGlowIntensity.value = v
+    })
+    gui.add(guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
+      back_plane.program.uniforms.uDistortionIntensity.value = v
+    })
+    gui.add(guiObj, "uFallOff").min(0.05).max(0.5).step(0.001).onFinishChange((v) => {
+      back_plane.program.uniforms.uFallOff.value = v
     })
   }
   return guiObj

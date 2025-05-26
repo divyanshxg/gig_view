@@ -11,6 +11,7 @@ uniform float uTime;
 uniform float uRippleProgress1;
 uniform float uRippleProgress2;
 uniform float uRippleProgress3;
+uniform float uFallOff;
 out vec3 vPos;
 
 out vec2 vUv;
@@ -46,11 +47,23 @@ void main() {
     // float d2_3 = smoothstep(-t3, -t3 + 1., d);
     float d_distortion = 0.0;
 
-    d_distortion += (d1_1 - d2_1) * 0.2; // Base amplitude
-    d_distortion += (d1_2 - d2_2) * 0.05; // Base amplitude
+    // Edge-based attenuation: strong in center, weak near edges
+    vec2 falloff = smoothstep(-0.2, uFallOff , uv) * smoothstep(-0.2, uFallOff, 1.0 - uv);
+    float baseAmplitudeFalloff = falloff.x * falloff.y;
+
+    // baseAmplitudeFalloff = 1.;
+
+    d_distortion += (d1_1 - d2_1) * 0.2 * baseAmplitudeFalloff;
+    d_distortion += (d1_2 - d2_2) * 0.05 * baseAmplitudeFalloff;
     // d_distortion += (d1_2 - d2_2)*0.1;
     // d_distortion += (d1_3 - d2_3)*0.06;
 
+    // // Create a falloff mask that is 1.0 at the center and fades to 0.0 at the edges
+    // vec2 edgeFalloff = smoothstep(0.0, 0.05, uv) * smoothstep(0.0, 0.05, 1.0 - uv);
+    // float attenuation = edgeFalloff.x * edgeFalloff.y;
+    //
+    // // Apply attenuation to distortion
+    // d_distortion *= attenuation;
     pos.z = -d_distortion ;
 
     vColor = vec3(d_distortion);

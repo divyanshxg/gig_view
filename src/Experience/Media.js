@@ -151,6 +151,12 @@ export default class Media {
         },
         uRippleWidth: {
           value: 0
+        },
+        uRippleWave: {
+          value: 0
+        },
+        uFallOff: {
+          value: 0.31
         }
       }
     });
