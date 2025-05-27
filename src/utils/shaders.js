@@ -14,6 +14,10 @@ import fragment_back_5 from '../shaders/05/fragment_back.glsl';
 import fragment_front_5 from '../shaders/05/fragment_front.glsl';
 import fragment_back_6 from '../shaders/06/fragment_back.glsl';
 import fragment_front_6 from '../shaders/06/fragment_front.glsl';
+import fragment_back_7 from '../shaders/07/fragment_back.glsl';
+import fragment_front_7 from '../shaders/07/fragment_front.glsl';
+import fragment_back_8 from '../shaders/08/fragment_back.glsl';
+import fragment_front_8 from '../shaders/08/fragment_front.glsl';
 
 // Vertex Shaders
 
@@ -31,6 +35,10 @@ import vertex_back_5 from '../shaders/05/vertex_back.glsl';
 import vertex_front_5 from '../shaders/05/vertex_front.glsl';
 import vertex_back_6 from '../shaders/06/vertex_back.glsl';
 import vertex_front_6 from '../shaders/06/vertex_front.glsl';
+import vertex_back_7 from '../shaders/07/vertex_back.glsl';
+import vertex_front_7 from '../shaders/07/vertex_front.glsl';
+import vertex_back_8 from '../shaders/08/vertex_back.glsl';
+import vertex_front_8 from '../shaders/08/vertex_front.glsl';
 
 
 const back_fragment = [
@@ -41,6 +49,8 @@ const back_fragment = [
   fragment_back_4,
   fragment_back_5,
   fragment_back_6,
+  fragment_back_7,
+  fragment_back_8,
 ];
 
 const front_fragment = [
@@ -51,6 +61,8 @@ const front_fragment = [
   fragment_front_4,
   fragment_front_5,
   fragment_front_6,
+  fragment_front_7,
+  fragment_front_8,
 ];
 
 const back_vertex = [
@@ -61,6 +73,8 @@ const back_vertex = [
   vertex_back_4,
   vertex_back_5,
   vertex_back_6,
+  vertex_back_7,
+  vertex_back_8
 ];
 
 const front_vertex = [
@@ -71,6 +85,8 @@ const front_vertex = [
   vertex_front_4,
   vertex_front_5,
   vertex_front_6,
+  vertex_front_7,
+  vertex_front_8,
 ];
 
 export {

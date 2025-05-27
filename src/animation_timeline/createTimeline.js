@@ -6,11 +6,13 @@ import effect3 from './effects/effect_3.js'
 import effect4 from './effects/effect_4.js'
 import effect5 from './effects/effect_5.js'
 import effect6 from './effects/effect_6.js'
+import effect7 from './effects/effect_7.js'
+import effect8 from './effects/effect_8.js'
 
 
-const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6]
+const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6, effect7, effect8]
 
-export default function animationTimeline(front_plane, back_plane, notch, index) {
+export default function animationTimeline(front_plane, back_plane, notch, index, guiConfig) {
 
   let tl = gsap.timeline()
 
@@ -62,7 +64,7 @@ export default function animationTimeline(front_plane, back_plane, notch, index)
     duration: timeline_config.back_wave_progress_1_duration
   }, timeline_config.back_wave_progress_1_timeline);
 
-  if (index == 5 || index == 6) {
+  if (index == 5 || index == 6 || index == 7 || index == 8) {
     tl.to(back_plane.program.uniforms.uGlowRadius, {
       value: 1, // reduce its effect to 3.* 0.18
       ease: timeline_config.glow_radius_ease,
@@ -105,7 +107,7 @@ export default function animationTimeline(front_plane, back_plane, notch, index)
 
   }
 
-  if (index == 5 || index == 6) {
+  if (index == 5 || index == 6 || index == 7 || index == 8) {
     tl.to(back_plane.program.uniforms.uRippleProgress1, {
       value: 1,
       duration: timeline_config.back_wave_ripple_1_progress_duration,
@@ -131,14 +133,14 @@ export default function animationTimeline(front_plane, back_plane, notch, index)
     }, timeline_config.back_wave_ripple_width_timeline)
   }
 
-  if (index == 6) {
+  if (index == 5 || index == 6 || index == 7 || index == 8) {
     tl.to(back_plane.program.uniforms.uRippleWave, {
       value: timeline_config.back_plane_ripple_wave_duration,
       duration: timeline_config.back_plane_ripple_wave_duration,
       ease: timeline_config.back_plane_ripple_wave_ease
     }, timeline_config.back_plane_ripple_wave_timeline)
-  }
 
+  }
 
   return tl
 }

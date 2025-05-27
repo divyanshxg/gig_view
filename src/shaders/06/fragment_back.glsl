@@ -25,18 +25,6 @@ uniform float uRippleWave;
 in vec2 vUv;
 out vec4 fragColor;
 
-// Define RGB color constants using vec3 (a 3-component vector, typically for colors)
-#define RED vec3(1.0, 0.0, 0.0)     // Defines 'RED' as a vec3 representing red color (R=1, G=0, B=0)
-#define GREEN vec3(0.0, 1.0, 0.0)   // Defines 'GREEN' as a vec3 representing green color (R=0, G=1, B=0)
-#define BLUE vec3(0.0, 0.0, 1.0)    // Defines 'BLUE' as a vec3 representing blue color (R=0, G=0, B=1)
-#define WHITE vec3(1.0)             // Defines 'WHITE' as a vec3 representing white color (R=1, G=1, B=1). Shorthand for vec3(1.0, 1.0, 1.0).
-
-#define PI 3.1415926535
-
-// Maps a value from one range [min1, max1] to another [min2, max2]
-float map(float min1, float max1, float value, float min2, float max2) {
-    return min2 + ((value - min1) / (max1 - min1)) * (max2 - min2);
-}
 
 
 vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
@@ -118,106 +106,81 @@ vec2 uv = vec2(
 
 // Wave 2 - Distortion Wave 
 
-    // t = wave_progress_2*3. - 1.5; // max value is 2.5
-    // // t = uRippleProgress *3. - 1.5;
-    // d = 1.0 - length(normalized_uv - vec2(0., 0.9));// reusing variable d
-    //
-    // d1 = smoothstep(-t -0.15 , -t, d);
-    // d2 = smoothstep(-t , -t+0.15  , d);
-    //
-    // float d_distortion = d1-d2;
-    //
-    // float decress_effect = uDistortionIntensity; 
-    //
-    // vec2 distortion_offset = d_distortion * normalize(normalized_uv - vec2(0., 0.9)) * decress_effect;
-    // distortion_offset = vec2(0.);
-    // vec3 tex = texture(uTexture, uv- distortion_offset).rgb;
+    t = uRippleWave*0.6; // reusing variable t
 
-    float smallerAxis = min(uPlane.x , uPlane.y);
+    // vec2 viewSize = uResolution;
+    vec2 viewSize = uPlane;
+    vec2 position = vUv * viewSize;
 
-    vec2 distortion_uv = vec2(vUv.x , vUv.y) - 0.5;
-    distortion_uv = distortion_uv/smallerAxis;
+    vec2 position_yflip = vec2(position.x ,  position.y);
+    float uv_y_dynamic_island_offset = 0.46;
 
-    // Set the center of the ripple effect (Y-shifted slightly up)
-    vec2 rippleCenter = vec2(0.0, 1.);
+    vec2 uv_d  =  position_yflip/viewSize;
 
-    // Duration for how long ripples are actively expanding
-    float rippleDurationBase = 1.0;
+    vec4 texture_color = texture(uTexture , uv);
 
-    // Time between ripple events (pause between pulses)
-    float rippleDurationWait = 0.7;
+    // Initialize variables for the bang effect
+    vec2 bang_offset = vec2(0.0); // Displacement offset for the bang effect
+    float bang_d = 0.0;           // Intensity of the first bang wave
 
-    // Full time for one complete ripple cycle (pulse + wait)
-    float rippleTotalDuration = rippleDurationBase + rippleDurationWait;
+    if (t >= 0.0) {
+        float aT = t - 0.0;       // Adjusted time (starts at 0 when bang begins)
+        vec2 uv2 = uv_d;            // Copy UV coords for manipulation
+        uv2 -= 0.5;               // Center UV coords around (0,0) by subtracting 0.5
+        uv2.x *= viewSize.x / viewSize.y; // Adjust for aspect ratio to make effect circular
+        // uv2.x -= 0.1;             // Slight horizontal shift for effect positioning
 
-    // Controls how tightly spaced the sine wave ripples are
-    float frequency = 0.95;
+        vec2 uv_bang = vec2(uv2.x, uv2.y); // Store transformed UV coords
+        vec2 uv_bang_origin = vec2(uv_bang.x, uv_bang.y - uv_y_dynamic_island_offset); // Set bang origin with Y offset
+        bang_d = (aT * 0.16) / length(uv_bang_origin); // Calculate bang wave intensity based on distance from origin
+        bang_d = smoothstep(0.09, 0.05, bang_d) * smoothstep(0.04, 0.07, bang_d) * (uv.y + 0.05); // Shape the wave with smoothstep and Y influence
+        float off = 1.;
+        bang_offset = vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * 0.1; // Calculate displacement for first wave
 
-    // Scales the frequency for final ripple appearance
-    float waveOutputFreq = 1.2;
-
-    // Vector from ripple center to current pixel in normalized space
-    vec2 deltaFromCenter = distortion_uv - rippleCenter;
-
-    // Unit vector pointing from the ripple center to this pixel
-    vec2 dirFromCenter = normalize(deltaFromCenter);
-
-    // Smoothing Out Ripple End
-    
-    float currentRippleTime = uRippleWave;
-
-    float rippleProgress = currentRippleTime / rippleTotalDuration;
-
-    float damping = smoothstep(1.5, 0.7, rippleProgress);
+        float bang_d2 = ((aT - 0.085) * 0.14) / length(uv_bang_origin); // Second wave, slightly delayed
+        bang_d2 = smoothstep(0.09, 0.05, bang_d2) * smoothstep(0.04, 0.07, bang_d2) * (uv.y + 0.05); // Shape second wave similarly
+        bang_offset += vec2(-8.0 * bang_d2 * uv2.x, -4.0 * bang_d2 * (uv2.y - 0.4)) * -0.02; // Add displacement for second wave
+    }
 
 
-    // How much time is left in this cycle
-    float remainingRippleTime = rippleTotalDuration - currentRippleTime;
+    // Apply displacement to texture sampling
+    vec2 uv_blast = uv + bang_offset; // Adjust UV coords with bang displacement
+    texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
-    // Dynamically adjust the influence of distance over time
-    // Ripples appear to grow or shrink depending on time in the cycle
-    float lengthInfluence = map(rippleDurationBase, 0.0, currentRippleTime, 0.5, 0.5);
+    // Apply blur effect where bang is active
+    if (bang_d > 0.0) {
+        float Pi = 6.28318530718 * 2.0; // Define 2*PI for circular sampling
+        float Directions = 20.0;        // Number of directions for blur sampling
+        float Quality = 6.0;            // Number of samples per direction
+        float Radius = bang_d * 0.08;   // Blur radius scales with bang intensity
 
-    // Use a sine wave to calculate the wave-like distortion strength at this pixel
-    // Phase is based on time and distance from center
-    float amplitude = sin(
-        frequency * (
-            (-length(deltaFromCenter) * lengthInfluence + currentRippleTime)
-            * (2.0 * PI * waveOutputFreq) / rippleDurationBase
-        )
-    );
+        vec4 blurColor = vec4(0.0);     // Initialize blur color accumulator
+        float totalSamples = 0.0;       // Track number of samples for averaging
 
-    // Attenuate the amplitude over time and with distance
-    // Fades ripple edges and controls its visual decay
-    amplitude *= (0.32 * remainingRippleTime) / (
-        1.0 + (10.0 * lengthInfluence) + length(deltaFromCenter)
-    );
+        // Loop over directions and distances to sample blur
+        for(float d = 0.0; d < Pi; d += Pi / Directions) {
+            for(float i = 1.0 / Quality; i <= 1.0; i += 1.0 / Quality) {
+                vec2 blurPos = uv_blast + vec2(cos(d), sin(d)) * Radius * i; // Calculate blur sample position
+                blurColor += texture(uTexture, blurPos); // Add sample to blur color
+                totalSamples += 1.0; // Increment sample count
+            }
+        }
+        blurColor /= totalSamples; // Average the blur samples
 
-    amplitude *= damping;
+        // Blend original displaced color with blurred color based on bang intensity
+        texture_color = mix(texture_color, blurColor, bang_d * 2.0);
+    }
 
-    // Create a falloff that is 1.0 at the center and 0.0 at the edges
-    vec2 edgeFalloff = smoothstep(0.0, 0.2, vUv) * smoothstep(0.0, 0.2, 1.0 - vUv);
-    float edgeAttenuation = edgeFalloff.x * edgeFalloff.y;
+    // Enhance colors with a flash effect based on bang intensity and time
+    texture_color = texture_color * (1.0 + bang_d * 3. * smoothstep(.05, .1, t));
 
-    // Reduce amplitude near edges
-    amplitude *= edgeAttenuation;
+    // vec2 distortion_offset = vec2(0.);
+    vec3 tex = texture_color.xyz;
 
-    vec2 offsetUV = uv + dirFromCenter * amplitude;
-
-    // Sample the distorted texture from the input channel
-    vec3 tex = texture(uTexture , offsetUV).rgb;
-
-    // vec3 tex = vec3(vUv ,0.0);
-
-
-    // Blurred Texture
 
     float tex_down = uBlurAmount;
     vec3 blured = 1.06*gaus_blur(uTexture , uv, vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
-    //   float p = wave_progress_1;
-    // float progressive_blur_factor = smoothstep(p-0.25 , p-0.05,1.0 - vUv.y );
-    // progressive_blur_factor = mix( progressive_blur_factor , 0.0 ,  smoothstep(0.6,0.8, p ) );
 
 
     vec3 final = mix(tex, blured , 1.0 - unblur_p);
@@ -225,5 +188,10 @@ vec2 uv = vec2(
 
 
     fragColor = vec4( final * (1.0 + (2.2*d_glow )*max(vUv.y,0.35) ), 1.0);
+    // fragColor = vec4( final + uGlowRadius, 1.0);
+
+    // fragColor = vec4(vColor ,1.0);
+
+    // fragColor = vec4(step(0.45 + 0.033 ,vPos.yyy), 1.0);
 }
 

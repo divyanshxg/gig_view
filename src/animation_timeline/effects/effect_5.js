@@ -106,5 +106,8 @@ export default {
   back_wave_ripple_width_duration: 1.,
   back_wave_ripple_width_timeline: "start+=1.3",
 
+  back_plane_ripple_wave_duration: 5,
+  back_plane_ripple_wave_ease: "none",
+  back_plane_ripple_wave_timeline: "start+=2.3"
 };
 

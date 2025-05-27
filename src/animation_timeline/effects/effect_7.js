@@ -52,7 +52,7 @@ export default {
 
 
   //glow wave
-  back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
+  back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.635,0.076 0.824,0.282 0.962,0.432 0.925,0.717 1,1 "),
   back_wave_progress_1_duration: 3.0, // front_scale_first_duration
   back_wave_progress_1_timeline: `start+=0`,
 
@@ -108,7 +108,7 @@ export default {
 
   back_plane_ripple_wave_duration: 5,
   back_plane_ripple_wave_ease: "none",
-  back_plane_ripple_wave_timeline: "start+=2.4"
+  back_plane_ripple_wave_timeline: "start+=2.15"
 };
 
 

@@ -47,7 +47,8 @@ export default class Media {
     this.gl.shaderSource(vertexShader, vertex_shader);
     this.gl.compileShader(vertexShader);
     if (!this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS)) {
-      console.error('Vertex shader compilation failed:', this.gl.getShaderInfoLog(vertexShader));
+
+      console.error(`Vertex shader ${this.elementIndex} - ${vertexShader} compilation failed:`, this.gl.getShaderInfoLog(vertexShader));
       return null;
     }
 
@@ -56,7 +57,7 @@ export default class Media {
     this.gl.shaderSource(fragmentShader, fragment_shader);
     this.gl.compileShader(fragmentShader);
     if (!this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS)) {
-      console.error('Fragment shader compilation failed:', this.gl.getShaderInfoLog(fragmentShader));
+      console.error(`Fragment shader ${this.elementIndex} - ${fragment_shader} compilation failed:`, this.gl.getShaderInfoLog(fragmentShader));
       return null;
     }
 
@@ -195,7 +196,7 @@ export default class Media {
 
   createTimeline() {
 
-    this.tl = animationTimeline(this.front_plane, this.back_plane, this.notch, this.elementIndex)
+    this.tl = animationTimeline(this.front_plane, this.back_plane, this.notch, this.elementIndex, this.guiObj)
     this.tl.pause()
     // this.tl.paused()
 
@@ -220,5 +221,6 @@ export default class Media {
 
   update() {
     this.back_plane.program.uniforms.uTime.value += 0.05
+    // console.log(this.guiObj.uShockWaveDelay)
   }
 }
