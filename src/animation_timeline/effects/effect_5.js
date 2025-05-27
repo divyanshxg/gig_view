@@ -4,6 +4,8 @@ import { CustomEase } from 'gsap/CustomEase'
 
 gsap.registerPlugin(CustomEase)
 
+let stretch_ease = CustomEase.create("custom", "M0,0 C0.03,0.094 0.117,0.422 0.246,0.67 0.351,0.873 0.493,1.014 0.578,1 0.681,0.981 0.669,0.163 0.73,-0.054 0.767,-0.188 0.756,-0.107 0.813,-0.032 0.871,0.042 0.972,0 1,0 ");
+// let stretch_ease = CustomEase.create("custom", "M0,0 C0.063,0.191 0.409,1.045 0.621,1 0.768,0.967 0.827,0.145 0.895,-0.134 0.923,-0.255 0.972,0.01 1,0.01 ");
 let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
 // let ripple_ease = CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 ")
 let ripple_ease = CustomEase.create("custom", "M0,0 C0.06,0.271 0.427,0.037 0.616,0.243 0.754,0.393 0.925,0.717 1,1 ")
@@ -106,8 +108,20 @@ export default {
   back_wave_ripple_width_duration: 1.,
   back_wave_ripple_width_timeline: "start+=1.3",
 
+
+
   back_plane_ripple_wave_duration: 5,
   back_plane_ripple_wave_ease: "none",
-  back_plane_ripple_wave_timeline: "start+=2.3"
+  back_plane_ripple_wave_timeline: "start+=2.5",
+
+
+
+  // Texture Stretch
+
+  back_wave_progress_stretch_ease: stretch_ease,
+  back_wave_stretch_timeline: "start+=1.4",
+  back_wave_stretch_duration: 1.1
+
+
 };
 

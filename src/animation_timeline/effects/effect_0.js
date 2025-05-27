@@ -3,6 +3,7 @@ import { CustomEase } from 'gsap/CustomEase'
 
 gsap.registerPlugin(CustomEase)
 // this is the default or the effect_0 time line config
+let stretch_ease = CustomEase.create("custom", "M0,0 C0.048,0 0.195,0.086 0.29,0.272 0.432,0.551 0.579,0.969 0.73,0.969 0.817,0.969 0.861,0 0.921,-0.285 0.954,-0.439 0.977,0 1,0 ");
 export default {
   // Existing wave configuration
   glow_delay: 0.7,
@@ -42,6 +43,13 @@ export default {
   // Back plane wave_progress_2
   back_wave_progress_2_duration: 3.0,
   back_wave_progress_2_ease: "power4.inOut",
-  back_wave_progress_2_timeline: "start+=0.5" // Uses distortion_delay
+  back_wave_progress_2_timeline: "start+=0.5", // Uses distortion_delay
+
+
+  // stretch
+  back_wave_progress_stretch_ease: stretch_ease,
+  back_wave_stretch_timeline: "start+=0.95",
+  back_wave_stretch_duration: 0.8
+
 
 }

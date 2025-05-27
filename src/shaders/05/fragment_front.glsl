@@ -51,10 +51,10 @@ void main() {
     );
 
 vec2 uv = vec2(
-        vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+        (vUv.x ) * ratio.x + (1.0 - ratio.x) * 0.5,
         vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
     );
-
+uv = vec2(uv.x -  0.012, uv.y);
 
   float scaleFactor = mix(1.0, 2.0, uProgress); // Scales from 1x to 2x
   vec2 scaledUv = uv;

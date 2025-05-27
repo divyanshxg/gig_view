@@ -19,6 +19,7 @@ uniform float uGlowRadius;
 uniform float uRippleProgress;
 uniform float uRippleWidth;
 uniform float uRippleWave;
+uniform float uTextureStretch;
 
 
 
@@ -91,6 +92,7 @@ vec2 uv = vec2(
         vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
     );
 
+uv = vec2(uv.x -  0.012, uv.y);
 
 // Wave 1 GLOW Accumulation
     float t = wave_progress_1*3.  - 1.5; // max value is 3.
@@ -117,7 +119,8 @@ vec2 uv = vec2(
 
     vec2 uv_d  =  position_yflip/viewSize;
 
-    vec4 texture_color = texture(uTexture , uv);
+    vec2 stretch_uv = vec2(uv.x, uv.y/(1.+uTextureStretch/12.) );
+    vec4 texture_color = texture(uTexture , stretch_uv);
 
     // Initialize variables for the bang effect
     vec2 bang_offset = vec2(0.0); // Displacement offset for the bang effect
@@ -144,7 +147,7 @@ vec2 uv = vec2(
 
 
     // Apply displacement to texture sampling
-    vec2 uv_blast = uv + bang_offset; // Adjust UV coords with bang displacement
+    vec2 uv_blast = stretch_uv + bang_offset; // Adjust UV coords with bang displacement
     texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
     // Apply blur effect where bang is active
@@ -172,14 +175,14 @@ vec2 uv = vec2(
     }
 
     // Enhance colors with a flash effect based on bang intensity and time
-    texture_color = texture_color * (1.0 + bang_d * 3. * smoothstep(.05, .1, t));
+    texture_color = texture_color * (1.0 + bang_d * 4. * smoothstep(.05, .1, t));
 
     // vec2 distortion_offset = vec2(0.);
     vec3 tex = texture_color.xyz;
 
 
     float tex_down = uBlurAmount;
-    vec3 blured = 1.06*gaus_blur(uTexture , uv, vec2(uImage.x * tex_down, uImage.y * tex_down) );
+    vec3 blured = 1.06*gaus_blur(uTexture , stretch_uv , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
 
 

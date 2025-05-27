@@ -97,15 +97,15 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
   }, timeline_config.back_unblur_timeline);
 
 
-  if (index === 3) {
+  // if (index ==3 || index == 5 || index == 6 || index == 7) {
 
-    tl.to(back_plane.program.uniforms.uTextureStretch, {
-      value: 1.,
-      duration: timeline_config.back_wave_stretch_duration,
-      ease: timeline_config.back_wave_progress_stretch_ease
-    }, timeline_config.back_wave_stretch_timeline)
+  tl.to(back_plane.program.uniforms.uTextureStretch, {
+    value: 1.,
+    duration: timeline_config.back_wave_stretch_duration,
+    ease: timeline_config.back_wave_progress_stretch_ease
+  }, timeline_config.back_wave_stretch_timeline)
 
-  }
+  // }
 
   if (index == 5 || index == 6 || index == 7 || index == 8) {
     tl.to(back_plane.program.uniforms.uRippleProgress1, {
