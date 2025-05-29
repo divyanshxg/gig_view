@@ -63,7 +63,7 @@ export default function getDebugProperties(gui, guiObj, back_plane, front_plane,
     gui.add(guiObj, "uGlowIntensity").min(0.0).max(1).step(0.01).onFinishChange((v) => {
       back_plane.program.uniforms.uGlowIntensity.value = v
     })
-    gui.add(guiObj, "uDistortionIntensity").min(0.1).max(3.).step(0.001).onFinishChange((v) => {
+    gui.add(guiObj, "uDistortionIntensity").min(0.1).max(1.).step(0.001).onFinishChange((v) => {
       back_plane.program.uniforms.uDistortionIntensity.value = v
     })
   }
