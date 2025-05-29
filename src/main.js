@@ -58,7 +58,7 @@ function run() {
 
         const effect = gui.addFolder(`${container[i].dataset.container} - ` + effects_name[container[i].dataset.container])
 
-        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect)
+        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect, i)
         const reset_btn = container[i].querySelector(".reset_anim_btn")
         reset_btn.addEventListener("click", (e) => {
           scene.onTouchDown()

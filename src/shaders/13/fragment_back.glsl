@@ -160,8 +160,6 @@ uv = vec2(uv.x -  0.012, uv.y);
     effective_bang_offset *= 1.0 - smoothstep(0.85, 0.95,uRippleWave );
     // Apply blended offset to UVs
     vec2 uv_blast = stretch_uv + effective_bang_offset*0.7;
-    // // Apply displacement to texture sampling
-    // vec2 uv_blast = stretch_uv + bang_offset; // Adjust UV coords with bang displacement
     texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
     // Apply blur effect where bang is active

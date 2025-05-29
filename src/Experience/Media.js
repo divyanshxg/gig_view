@@ -6,16 +6,16 @@ import animationTimeline from "../animation_timeline/createTimeline";
 import notch_vs from '../shaders/notch_shader/vertexShader.glsl'
 import notch_fs from '../shaders/notch_shader/fragmentShader.glsl'
 import image_grid from '../../assets/grid.png'
+import image_sample from '../../assets/newSample.jpg'
 
 gsap.registerPlugin(CustomEase)
 
 export default class Media {
   static count = 0;
-  constructor({ renderer, scene, geometry, img, gl, back_fragment, front_fragment, back_vertex, front_vertex, gui, elemIndex, containerAR }) {
+  constructor({ renderer, scene, geometry, img, gl, back_fragment, front_fragment, back_vertex, front_vertex, gui, elemIndex, containerAR, renderElement }) {
     // count++;
 
-    console.log(Media.count)
-    Media.count++;
+    this.renderElement = renderElement;
     this.containerAR = containerAR;
     this.gui = gui
     this.elementIndex = elemIndex;
@@ -90,14 +90,21 @@ export default class Media {
       }
 
     };
-    // image.src = this.img;
-    image.src = image_grid;
+    image.src = this.img;
+    // image.src = image_grid;
 
-    if (Media.count == 1) {
+    if (this.renderElement == 0) {
       image.src = this.img;
-    } else {
-      image.src = image_grid;
+    } else if (this.renderElement == 1) {
+      image.src = image_grid
+    } else if (this.renderElement == 2) {
+      image.src = image_sample
     }
+    // console.log(Media.count)
+    // console.log(Media.count)
+
+
+
     const program = new Program(this.gl, {
       vertex: vertex_shader,
       fragment: fragment_shader,
