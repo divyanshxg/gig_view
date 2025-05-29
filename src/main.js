@@ -3,8 +3,10 @@ import html2canvas from "html2canvas-pro";
 import GUI from "lil-gui";
 import gsap from 'gsap'
 import Scene from "./Experience/Scene";
+import { Pane } from "tweakpane";
 
 
+const pane = new Pane()
 const gui = new GUI({
   closeFolders: true
 })
@@ -58,7 +60,8 @@ function run() {
 
         const effect = gui.addFolder(`${container[i].dataset.container} - ` + effects_name[container[i].dataset.container])
 
-        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect, i)
+        const curr_pane = ""
+        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect, pane, i)
         const reset_btn = container[i].querySelector(".reset_anim_btn")
         reset_btn.addEventListener("click", (e) => {
           scene.onTouchDown()

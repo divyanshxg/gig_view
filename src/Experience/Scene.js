@@ -3,8 +3,9 @@ import Media from "./Media"
 import { Renderer, Camera, Transform, Plane } from 'ogl'
 
 export default class Scene {
-  constructor(container, snapshot_img, index, gui, renderElement) {
+  constructor(container, snapshot_img, index, gui, pane, renderElement) {
     this.gui = gui
+    this.pane = pane
     this.elemIndex = index
     this.renderElement = renderElement;
     this.img = snapshot_img

@@ -7,6 +7,10 @@ import notch_vs from '../shaders/notch_shader/vertexShader.glsl'
 import notch_fs from '../shaders/notch_shader/fragmentShader.glsl'
 import image_grid from '../../assets/grid.png'
 import image_sample from '../../assets/newSample.jpg'
+import image_sample_1 from '../../assets/samples/01.jpg'
+import image_sample_2 from '../../assets/samples/10.jpg'
+import image_sample_3 from '../../assets/samples/11.jpg'
+import image_sample_4 from '../../assets/samples/02.jpg'
 
 gsap.registerPlugin(CustomEase)
 
@@ -22,7 +26,7 @@ export default class Media {
 
     // GUI OBJ to vary parameters
     this.guiObj = {
-      blur: 0.03,
+      blur: 0.09,
       uBorderRadius: 0.2,
       uDistortionIntensity: 0.02,
       uGlowIntensity: 1.,
@@ -99,7 +103,19 @@ export default class Media {
       image.src = image_grid
     } else if (this.renderElement == 2) {
       image.src = image_sample
+    } else if (this.renderElement == 3) {
+      image.src = image_sample_1
+    } else if (this.renderElement == 4) {
+      image.src = image_sample_2
+    } else if (this.renderElement == 5) {
+      image.src = image_sample_3
+    } else if (this.renderElement == 6) {
+      image.src = image_sample_4
     }
+
+
+
+
     // console.log(Media.count)
     // console.log(Media.count)
 

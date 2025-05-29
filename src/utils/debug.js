@@ -1,7 +1,7 @@
 export default function getDebugProperties(gui, guiObj, back_plane, front_plane, index) {
 
 
-  gui.add(guiObj, "blur").min(0.01).max(0.1).step(0.01).onFinishChange((v) => {
+  gui.add(guiObj, "blur").min(0.03).max(0.15).step(0.01).onFinishChange((v) => {
     back_plane.program.uniforms.uBlurAmount.value = v
   })
   gui.add(guiObj, "uBorderRadius").min(0.01).max(0.5).step(0.01).onFinishChange((v) => {
@@ -56,21 +56,21 @@ export default function getDebugProperties(gui, guiObj, back_plane, front_plane,
   if (index == 6 || index == 7 || index == 8 || index == 9 || index == 10 || index == 11 || index == 12 || index == 13 || index == 14) {
     guiObj = {
       ...guiObj,
-      uDistortionIntensity: 0.01,
-      uGlowIntensity: 0.7
+      uDistortionIntensity: 0.5,
+      uGlowIntensity: 0.3
     }
 
-    gui.add(guiObj, "uGlowIntensity").min(0.1).max(2).step(0.01).onFinishChange((v) => {
+    gui.add(guiObj, "uGlowIntensity").min(0.0).max(1).step(0.01).onFinishChange((v) => {
       back_plane.program.uniforms.uGlowIntensity.value = v
     })
-    gui.add(guiObj, "uDistortionIntensity").min(0.01).max(0.08).step(0.001).onFinishChange((v) => {
+    gui.add(guiObj, "uDistortionIntensity").min(0.1).max(3.).step(0.001).onFinishChange((v) => {
       back_plane.program.uniforms.uDistortionIntensity.value = v
     })
   }
   if (index == 5) {
     guiObj = {
       ...guiObj,
-      uDistortionIntensity: 0.01,
+      uDistortionIntensity: 0.06,
       uGlowIntensity: 0.7,
     }
 

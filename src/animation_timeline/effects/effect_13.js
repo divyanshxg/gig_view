@@ -69,7 +69,7 @@ export default {
 
 
   // unblur
-  back_unblur_duration: 0.7,
+  back_unblur_duration: 0.8,
   back_unblur_ease: "none",
   back_unblur_timeline: `start+=${2.0}`,
 

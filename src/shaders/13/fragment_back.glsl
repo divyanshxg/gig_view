@@ -36,7 +36,7 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
 
     vec4 gaussSum = vec4(0.0);
     float weightSum = 0.0;
-    vec2 texelSize = 1.0 / resolution; // Get the size of one pixel
+    vec2 texelSize = 4./ resolution; // Get the size of one pixel
 
     float m = 1.0;
     for (int x = -radius; x <= radius; x++) {
@@ -97,7 +97,7 @@ uv = vec2(uv.x -  0.012, uv.y);
 
 // Wave 1 GLOW Accumulation
     float t = wave_progress_1*3.  - 1.5; // max value is 3.
-    d = 1.0 - length(normalized_uv - vec2(0., 0.45*2.));// reusing variable d
+    d = 1.0 - length(normalized_uv - vec2(0.0, 0.97));// reusing variable d
 
   float glow_size = smoothstep(0.0, 0.5, wave_progress_1) * (1.0 - smoothstep(0.7, 1.0, wave_progress_1));
     // float d1 = smoothstep(-t -0.15 - 0.2*glow_size, -t, d);
@@ -159,7 +159,7 @@ uv = vec2(uv.x -  0.012, uv.y);
 
     effective_bang_offset *= 1.0 - smoothstep(0.85, 0.95,uRippleWave );
     // Apply blended offset to UVs
-    vec2 uv_blast = stretch_uv + effective_bang_offset*0.7;
+    vec2 uv_blast = stretch_uv + effective_bang_offset*(1.0 + uDistortionIntensity);
     texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
     // Apply blur effect where bang is active
@@ -194,7 +194,7 @@ uv = vec2(uv.x -  0.012, uv.y);
 
 
     float tex_down = uBlurAmount;
-    vec3 blured = 1.06*gaus_blur(uTexture , stretch_uv , vec2(uImage.x * tex_down, uImage.y * tex_down) );
+    vec3 blured = 1.0*gaus_blur(uTexture , stretch_uv , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
 
 
@@ -207,7 +207,7 @@ uv = vec2(uv.x -  0.012, uv.y);
     
     d_glow *= smoothstep(0.1, 0.9, uGlowRadius);
 
-    fragColor = vec4( final * (1.0 + (2.2*d_glow )*max(vUv.y,0.35) ), 1.0);
+    fragColor = vec4( final * (1.0 + ((1.+uGlowIntensity )*d_glow )*max(vUv.y,0.35) ), 1.0);
     // fragColor = vec4( final + uGlowRadius, 1.0);
 
     // fragColor = vec4(vColor ,1.0);
