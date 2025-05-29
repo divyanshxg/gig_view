@@ -53,7 +53,7 @@ export default function getDebugProperties(gui, guiObj, back_plane, front_plane,
     })
   }
 
-  if (index == 6 || index == 7 || index == 8) {
+  if (index == 6 || index == 7 || index == 8 || index == 9 || index == 10 || index == 11 || index == 12 || index == 13 || index == 14) {
     guiObj = {
       ...guiObj,
       uDistortionIntensity: 0.01,

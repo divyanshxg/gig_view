@@ -5,7 +5,9 @@ import gsap from 'gsap'
 import Scene from "./Experience/Scene";
 
 
-const gui = new GUI()
+const gui = new GUI({
+  closeFolders: true
+})
 
 const effects_name = [
   "initial attemp",
@@ -13,8 +15,16 @@ const effects_name = [
   "progressive blur",
   "2nd attempt of burst",
   "polishing timeline",
-  "vertex distortion",
-  "reference ripple"
+  "ripple 0",
+  "ripple 1",
+  "ripple 2",
+  "ripple 3",
+  "ripple 0 - midway",
+  "ripple 1 - midway",
+  "ripple 2 - midway",
+  "ripple 3 - midway",
+  "ripple 2 - midway_end_distortion",
+  "ripple 3 - chromatic",
 ]
 
 function run() {

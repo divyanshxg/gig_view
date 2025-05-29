@@ -108,7 +108,7 @@ uv = vec2(uv.x -  0.012, uv.y);
 
 // Wave 2 - Distortion Wave 
 
-    t = uRippleWave*0.43; // reusing variable t
+    t = uRippleWave*0.6; // reusing variable t
 
     // vec2 viewSize = uResolution;
     vec2 viewSize = uPlane;
@@ -175,7 +175,7 @@ uv = vec2(uv.x -  0.012, uv.y);
     }
 
     // Enhance colors with a flash effect based on bang intensity and time
-    texture_color = texture_color * (1.0 + bang_d * 1.2 * smoothstep(.05, .1, t));
+    texture_color = texture_color * (1.0 + bang_d * 3. * smoothstep(.05, .1, t));
 
     // vec2 distortion_offset = vec2(0.);
     vec3 tex = texture_color.xyz;

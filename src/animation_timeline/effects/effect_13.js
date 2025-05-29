@@ -53,12 +53,12 @@ export default {
 
 
   //glow wave
-  back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.045,0.203 0.558,0.17 0.835,0.267 0.928,0.3 0.981,0.399 1,0.47 "),
+  back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.635,0.076 0.824,0.282 0.962,0.432 0.925,0.717 1,1 "),
   back_wave_progress_1_duration: 3.0, // front_scale_first_duration
   back_wave_progress_1_timeline: `start+=0`,
 
   // glow Radius
-  glow_radius_ease: CustomEase.create("custom", "M0,0 C0,0.082 0.156,1 0.322,1 0.409,1 0.608,1.057 0.7,0.9 0.785,0.753 0.71,0.116 0.906,0.116 1.039,0.116 0.951,0.115 1,0.115 "),
+  glow_radius_ease: CustomEase.create("custom", "M0,0 C0,0.082 0.156,1 0.322,1 0.409,1 0.568,1.068 0.66,0.911 0.745,0.764 0.67,0.116 0.866,0.116 0.999,0.116 0.951,0.1 1,0.1 "),
   glow_radius_duration: 3.0,
   glow_radius_timeline: "start+=0",
 
@@ -107,10 +107,15 @@ export default {
   back_wave_ripple_width_duration: 1.,
   back_wave_ripple_width_timeline: "start+=1.3",
 
-  back_plane_ripple_wave_duration: 5,
-  back_plane_ripple_wave_ease: "none",
-  back_plane_ripple_wave_timeline: "start+=2.1",
+  back_plane_ripple_wave_duration: 3.5,
+  // back_plane_ripple_wave_ease: "none",
+  back_plane_ripple_wave_ease: CustomEase.create("custom", "M0,0 C0.015,0.3 0.161,0.576 0.319,0.724 0.511,0.904 0.818,1.001 1,1 "),
+  back_plane_ripple_wave_timeline: "start+=2.15",
 
+  back_plane_ripple_wave_factor_duration: 1.,
+  // back_plane_ripple_wave_factor_ease: CustomEase.create("custom", "M0,0 C0.029,0.206 -0.043,0.717 0.114,0.865 0.305,1.044 0.818,1.001 1,1 "),
+  back_plane_ripple_wave_factor_ease: "none",
+  back_plane_ripple_wave_factor_timeline: "start+=2.5",
 
   back_wave_progress_stretch_ease: stretch_ease,
   back_wave_stretch_timeline: "start+=1.4",

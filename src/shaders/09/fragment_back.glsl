@@ -19,6 +19,7 @@ uniform float uGlowRadius;
 uniform float uRippleProgress;
 uniform float uRippleWidth;
 uniform float uRippleWave;
+uniform float uRippleWaveFactor;
 uniform float uTextureStretch;
 
 
@@ -26,6 +27,9 @@ uniform float uTextureStretch;
 in vec2 vUv;
 out vec4 fragColor;
 
+float remap(float value, float inMin, float inMax, float outMin, float outMax) {
+    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
+}
 
 
 vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
@@ -88,11 +92,11 @@ void main() {
     );
 
 vec2 uv = vec2(
-        vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
-        vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+    (vUv.x) * ratio.x + (1.0 - ratio.x) * 0.5,
+      (  vUv.y )* ratio.y + (1.0 - ratio.y) * 0.5
     );
 
-uv = vec2(uv.x -  0.012, uv.y);
+uv = vec2(uv.x - 0.012, uv.y);
 
 // Wave 1 GLOW Accumulation
     float t = wave_progress_1*3.  - 1.5; // max value is 3.
@@ -108,8 +112,14 @@ uv = vec2(uv.x -  0.012, uv.y);
 
 // Wave 2 - Distortion Wave 
 
-    t = uRippleWave*0.43; // reusing variable t
+    // t = uRippleWave*0.5 * (1.0 - uRippleWaveFactor); // reusing variable t
+    // t = uRippleWave*0.5/(1.0 + uRippleWaveFactor*1.5); // reusing variable t
+    // t = uRippleWave/(1.+uRippleWaveFactor*6. ); // reusing variable t
+    t = uRippleWave*0.5; // reusing variable t
 
+    float smooth_off = (1.0 - smoothstep(0.95, .98, uRippleWave) );
+    // float smooth_off = 0.0;
+    float smooth_off2 = (1.0 - smoothstep(0.94, 1., uRippleWave) );
     // vec2 viewSize = uResolution;
     vec2 viewSize = uPlane;
     vec2 position = vUv * viewSize;
@@ -120,6 +130,7 @@ uv = vec2(uv.x -  0.012, uv.y);
     vec2 uv_d  =  position_yflip/viewSize;
 
     vec2 stretch_uv = vec2(uv.x, uv.y/(1.+uTextureStretch/12.) );
+    // vec4 texture_color = texture(uTexture , uv);
     vec4 texture_color = texture(uTexture , stretch_uv);
 
     // Initialize variables for the bang effect
@@ -136,17 +147,18 @@ uv = vec2(uv.x -  0.012, uv.y);
         vec2 uv_bang = vec2(uv2.x, uv2.y); // Store transformed UV coords
         vec2 uv_bang_origin = vec2(uv_bang.x, uv_bang.y - uv_y_dynamic_island_offset); // Set bang origin with Y offset
         bang_d = (aT * 0.16) / length(uv_bang_origin); // Calculate bang wave intensity based on distance from origin
-        bang_d = smoothstep(0.09, 0.05, bang_d) * smoothstep(0.04, 0.07, bang_d) * (uv.y + 0.05); // Shape the wave with smoothstep and Y influence
-        float off = 1.;
-        bang_offset = vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * 0.1; // Calculate displacement for first wave
+        bang_d = smoothstep(0.09  , 0.05, bang_d) * smoothstep(0.04, 0.07, bang_d) * (uv.y + 0.05); // Shape the wave with smoothstep and Y influence
+        float off = 0.7;
+        bang_offset = vec2(-8.0 * off * bang_d * smooth_off * uv2.x, -4.0 * off * bang_d * smooth_off* (uv2.y - 0.4)) * 0.1; // Calculate displacement for first wave
 
         float bang_d2 = ((aT - 0.085) * 0.14) / length(uv_bang_origin); // Second wave, slightly delayed
-        bang_d2 = smoothstep(0.09, 0.05, bang_d2) * smoothstep(0.04, 0.07, bang_d2) * (uv.y + 0.05); // Shape second wave similarly
-        bang_offset += vec2(-8.0 * bang_d2 * uv2.x, -4.0 * bang_d2 * (uv2.y - 0.4)) * -0.02; // Add displacement for second wave
+        bang_d2 = smoothstep(0.09  , 0.05, bang_d2) * smoothstep(0.04, 0.07, bang_d2) * (uv.y + 0.05); // Shape second wave similarly
+        bang_offset += vec2(-8.0 * smooth_off * off* bang_d2 *smoothstep(1.0,0.8 ,uRippleWave ) * uv2.x, -4.0 * bang_d2 * smooth_off *off * (uv2.y - 0.4)) * -0.02; // Add displacement for second wave
     }
 
 
     // Apply displacement to texture sampling
+    // vec2 uv_blast = uv + bang_offset; // Adjust UV coords with bang displacement
     vec2 uv_blast = stretch_uv + bang_offset; // Adjust UV coords with bang displacement
     texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
@@ -154,8 +166,8 @@ uv = vec2(uv.x -  0.012, uv.y);
     if (bang_d > 0.0) {
         float Pi = 6.28318530718 * 2.0; // Define 2*PI for circular sampling
         float Directions = 20.0;        // Number of directions for blur sampling
-        float Quality = 6.0;            // Number of samples per direction
-        float Radius = bang_d * 0.08;   // Blur radius scales with bang intensity
+        float Quality = 6.0 ;            // Number of samples per direction
+        float Radius = bang_d * (0.08 + uRippleWaveFactor*0.15);   // Blur radius scales with bang intensity
 
         vec4 blurColor = vec4(0.0);     // Initialize blur color accumulator
         float totalSamples = 0.0;       // Track number of samples for averaging
@@ -171,30 +183,32 @@ uv = vec2(uv.x -  0.012, uv.y);
         blurColor /= totalSamples; // Average the blur samples
 
         // Blend original displaced color with blurred color based on bang intensity
-        texture_color = mix(texture_color, blurColor, bang_d * 2.0);
+        texture_color = mix(texture_color, blurColor, bang_d * 2.0  );
     }
 
     // Enhance colors with a flash effect based on bang intensity and time
-    texture_color = texture_color * (1.0 + bang_d * 1.2 * smoothstep(.05, .1, t));
+    texture_color = texture_color * (1.0 + bang_d * 1.8 * smooth_off2 * smoothstep(.05, .1, t));
 
     // vec2 distortion_offset = vec2(0.);
+    vec4 tex_orig = texture(uTexture ,uv );
+
+    // texture_color =  mix(texture_color , tex_orig , 1.0 - smooth_off2);
     vec3 tex = texture_color.xyz;
+
+    // float blendFactor = smoothstep(0.95, 1.0, uRippleWave);
+    // tex = mix(tex, tex_orig, blendFactor);
 
 
     float tex_down = uBlurAmount;
     vec3 blured = 1.06*gaus_blur(uTexture , stretch_uv , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
+    float p = remap(wave_progress_1 , 0. , 1. , -0.47, 1.25);
+    float progressive_blur_factor = smoothstep(p , p+0.1,1.0 - vUv.y );
+    progressive_blur_factor = mix( progressive_blur_factor , 0.0 ,  smoothstep(0.6,0.8, p ) );
 
 
-    vec3 final = mix(tex, blured , 1.0 - unblur_p);
-
-
+    vec3 final = mix(tex, blured , progressive_blur_factor);
 
     fragColor = vec4( final * (1.0 + (2.2*d_glow )*max(vUv.y,0.35) ), 1.0);
-    // fragColor = vec4( final + uGlowRadius, 1.0);
-
-    // fragColor = vec4(vColor ,1.0);
-
-    // fragColor = vec4(step(0.45 + 0.033 ,vPos.yyy), 1.0);
 }
 

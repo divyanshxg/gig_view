@@ -158,6 +158,9 @@ export default class Media {
         },
         uFallOff: {
           value: 0.31
+        },
+        uRippleWaveFactor: {
+          value: 0
         }
       }
     });

@@ -111,7 +111,6 @@ export default {
   back_plane_ripple_wave_ease: "none",
   back_plane_ripple_wave_timeline: "start+=2.1",
 
-
   back_wave_progress_stretch_ease: stretch_ease,
   back_wave_stretch_timeline: "start+=1.4",
   back_wave_stretch_duration: 1.1

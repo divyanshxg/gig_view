@@ -3,8 +3,8 @@ import gsap from "gsap"
 import { CustomEase } from 'gsap/CustomEase'
 
 gsap.registerPlugin(CustomEase)
-
 let stretch_ease = CustomEase.create("custom", "M0,0 C0.03,0.094 0.117,0.422 0.246,0.67 0.351,0.873 0.493,1.014 0.578,1 0.681,0.981 0.669,0.163 0.73,-0.054 0.767,-0.188 0.756,-0.107 0.813,-0.032 0.871,0.042 0.972,0 1,0 ");
+
 let ease = CustomEase.create("custom", "M0,0 C0.272,0 0.657,0.231 0.681,0.272 0.759,0.406 0.744,0.947 1,0.947 ");
 // let ripple_ease = CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 ")
 let ripple_ease = CustomEase.create("custom", "M0,0 C0.06,0.271 0.49,0.171 0.616,0.243 0.659,0.267 0.687,0.226 0.723,0.282 0.833,0.45 0.688,0 1,0 ")
@@ -53,12 +53,12 @@ export default {
 
 
   //glow wave
-  back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.045,0.203 0.558,0.17 0.835,0.267 0.928,0.3 0.981,0.399 1,0.47 "),
+  back_wave_progress_1_ease: CustomEase.create("custom", "M0,0 C0.06,0.271 0.509,0.068 0.698,0.274 0.836,0.424 0.925,0.717 1,1 "),
   back_wave_progress_1_duration: 3.0, // front_scale_first_duration
   back_wave_progress_1_timeline: `start+=0`,
 
   // glow Radius
-  glow_radius_ease: CustomEase.create("custom", "M0,0 C0,0.082 0.156,1 0.322,1 0.409,1 0.608,1.057 0.7,0.9 0.785,0.753 0.71,0.116 0.906,0.116 1.039,0.116 0.951,0.115 1,0.115 "),
+  glow_radius_ease: CustomEase.create("custom", "M0,0 C0,0.082 0.156,1 0.322,1 0.409,1 0.568,1.068 0.66,0.911 0.745,0.764 0.67,0.116 0.866,0.116 0.999,0.116 0.951,0.1 1,0.1 "),
   glow_radius_duration: 3.0,
   glow_radius_timeline: "start+=0",
 
@@ -109,13 +109,12 @@ export default {
 
   back_plane_ripple_wave_duration: 5,
   back_plane_ripple_wave_ease: "none",
-  back_plane_ripple_wave_timeline: "start+=2.1",
+  back_plane_ripple_wave_timeline: "start+=2.50",
 
 
   back_wave_progress_stretch_ease: stretch_ease,
   back_wave_stretch_timeline: "start+=1.4",
   back_wave_stretch_duration: 1.1
-
 };
 
 

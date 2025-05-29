@@ -111,7 +111,7 @@ uv = vec2(uv.x - 0.012, uv.y);
 
 // Wave 2 - Distortion Wave 
 
-    t = uRippleWave*0.55; // reusing variable t
+    t = uRippleWave*0.43; // reusing variable t
 
     // vec2 viewSize = uResolution;
     vec2 viewSize = uPlane;
@@ -189,7 +189,7 @@ uv = vec2(uv.x - 0.012, uv.y);
     float tex_down = uBlurAmount;
     vec3 blured = 1.06*gaus_blur(uTexture , stretch_uv , vec2(uImage.x * tex_down, uImage.y * tex_down) );
 
-    float p = remap(wave_progress_1 , 0. , 1. , -0.45, 1.25);
+    float p = remap(wave_progress_1 , 0. , 1. , -0.52, 1.25);
     float progressive_blur_factor = smoothstep(p , p+0.1,1.0 - vUv.y );
     progressive_blur_factor = mix( progressive_blur_factor , 0.0 ,  smoothstep(0.6,0.8, p ) );
 

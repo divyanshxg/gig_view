@@ -8,9 +8,15 @@ import effect5 from './effects/effect_5.js'
 import effect6 from './effects/effect_6.js'
 import effect7 from './effects/effect_7.js'
 import effect8 from './effects/effect_8.js'
+import effect9 from './effects/effect_9.js'
+import effect10 from './effects/effect_10.js'
+import effect11 from './effects/effect_11.js'
+import effect12 from './effects/effect_12.js'
+import effect13 from './effects/effect_13.js'
+import effect14 from './effects/effect_14.js'
 
 
-const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6, effect7, effect8]
+const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6, effect7, effect8, effect9, effect10, effect11, effect12, effect13, effect14]
 
 export default function animationTimeline(front_plane, back_plane, notch, index, guiConfig) {
 
@@ -64,13 +70,28 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
     duration: timeline_config.back_wave_progress_1_duration
   }, timeline_config.back_wave_progress_1_timeline);
 
-  if (index == 5 || index == 6 || index == 7 || index == 8) {
+  if (index == 5 || index == 6 || index == 7 || index == 8 || index == 9 || index == 10 || index == 11 || index == 12) {
     tl.to(back_plane.program.uniforms.uGlowRadius, {
       value: 1, // reduce its effect to 3.* 0.18
       ease: timeline_config.glow_radius_ease,
       duration: timeline_config.glow_radius_duration
     }, timeline_config.glow_radius_timeline);
 
+  }
+
+  if (index == 13) {
+    tl.to(back_plane.program.uniforms.uGlowRadius, {
+      value: 1, // reduce its effect to 3.* 0.18
+      ease: timeline_config.glow_radius_ease,
+      duration: timeline_config.glow_radius_duration
+    }, timeline_config.glow_radius_timeline);
+  }
+  if (index == 14) {
+    tl.to(back_plane.program.uniforms.uGlowRadius, {
+      value: 1, // reduce its effect to 3.* 0.18
+      ease: timeline_config.glow_radius_ease,
+      duration: timeline_config.glow_radius_duration
+    }, timeline_config.glow_radius_timeline);
   }
 
 
@@ -107,7 +128,7 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
 
   // }
 
-  if (index == 5 || index == 6 || index == 7 || index == 8) {
+  if (index == 5 || index == 6 || index == 7 || index == 8 || index == 9 || index == 10 || index == 11 || index == 12) {
     tl.to(back_plane.program.uniforms.uRippleProgress1, {
       value: 1,
       duration: timeline_config.back_wave_ripple_1_progress_duration,
@@ -135,12 +156,116 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
 
   if (index == 5 || index == 6 || index == 7 || index == 8) {
     tl.to(back_plane.program.uniforms.uRippleWave, {
+      // value: timeline_config.back_plane_ripple_wave_duration,
       value: timeline_config.back_plane_ripple_wave_duration,
       duration: timeline_config.back_plane_ripple_wave_duration,
       ease: timeline_config.back_plane_ripple_wave_ease
     }, timeline_config.back_plane_ripple_wave_timeline)
+  }
+
+  if (index == 14) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      value: timeline_config.back_plane_ripple_wave_duration,
+      // value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
+  }
+  if (index == 13) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      // value: timeline_config.back_plane_ripple_wave_duration,
+      value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
+  }
+  if (index == 12) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      value: timeline_config.back_plane_ripple_wave_duration,
+      // value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
+  }
+
+  if (index == 11) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      // value: timeline_config.back_plane_ripple_wave_duration,
+      value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
+  }
+
+  if (index == 10) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      value: timeline_config.back_plane_ripple_wave_duration,
+      // value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
+  }
+  if (index == 10) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      value: timeline_config.back_plane_ripple_wave_duration,
+      // value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
+  }
+
+  if (index == 9) {
+    tl.to(back_plane.program.uniforms.uRippleWave, {
+      // value: timeline_config.back_plane_ripple_wave_duration,
+      value: 1.0,
+      duration: timeline_config.back_plane_ripple_wave_duration,
+      ease: timeline_config.back_plane_ripple_wave_ease
+    }, timeline_config.back_plane_ripple_wave_timeline)
+
+    tl.to(back_plane.program.uniforms.uRippleWaveFactor, {
+      value: 0.5,
+      duration: timeline_config.back_plane_ripple_wave_factor_duration,
+      ease: timeline_config.back_plane_ripple_wave_factor_ease
+    }, timeline_config.back_plane_ripple_wave_factor_timeline)
 
   }
+
 
   return tl
 }
