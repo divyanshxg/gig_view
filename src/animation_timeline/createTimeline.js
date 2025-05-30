@@ -12,17 +12,18 @@ import effect9 from './effects/effect_9.js'
 import effect10 from './effects/effect_10.js'
 import effect11 from './effects/effect_11.js'
 import effect12 from './effects/effect_12.js'
-import effect13 from './effects/effect_13.js'
+// import effect13 from './effects/effect_13.js'
 import effect14 from './effects/effect_14.js'
+import geteffect from './effects/effect_13.js'
 
 
-const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6, effect7, effect8, effect9, effect10, effect11, effect12, effect13, effect14]
+// const effects = [effect0, effect1, effect2, effect3, effect4, effect5, effect6, effect7, effect8, effect9, effect10, effect11, effect12, effect13, effect14]
 
-export default function animationTimeline(front_plane, back_plane, notch, index, guiConfig) {
+export default function animationTimeline(front_plane, back_plane, notch, index, guiConfig, my_ease) {
 
   let tl = gsap.timeline()
 
-  let timeline_config = effects[index]
+  let timeline_config = geteffect(my_ease)
 
 
   tl.to(front_plane.scale, {

@@ -3,8 +3,9 @@ import Media from "./Media"
 import { Renderer, Camera, Transform, Plane } from 'ogl'
 
 export default class Scene {
-  constructor(container, snapshot_img, index, gui, pane, renderElement) {
+  constructor(container, snapshot_img, index, gui, pane, renderElement, cubic_ease) {
     this.gui = gui
+    this.ease = cubic_ease
     this.pane = pane
     this.elemIndex = index
     this.renderElement = renderElement;
@@ -89,7 +90,8 @@ export default class Scene {
       gui: this.gui,
       elemIndex: this.elemIndex,
       containerAR: this.containerAR,
-      renderElement: this.renderElement
+      renderElement: this.renderElement,
+      cubic_ease: this.ease
       // renderElement : renderE
     })
   }
@@ -102,6 +104,17 @@ export default class Scene {
       this.medias.onClick()
     }
 
+  }
+  updateTimeline(ease) {
+
+    if (this.medias) {
+      if (this.medias.tl) {
+        this.medias.tl.kill(); // Kill the existing GSAP timeline
+      }
+      // Recreate the timeline with the new easing
+      // this.medias.createTimeline(ease);
+      this.medias.createTimeline(ease)
+    }
   }
 
   onTouchMove(event) {

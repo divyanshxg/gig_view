@@ -16,13 +16,14 @@ gsap.registerPlugin(CustomEase)
 
 export default class Media {
   static count = 0;
-  constructor({ renderer, scene, geometry, img, gl, back_fragment, front_fragment, back_vertex, front_vertex, gui, elemIndex, containerAR, renderElement }) {
+  constructor({ renderer, scene, geometry, img, gl, back_fragment, front_fragment, back_vertex, front_vertex, gui, elemIndex, containerAR, renderElement, cubic_ease }) {
     // count++;
 
     this.renderElement = renderElement;
     this.containerAR = containerAR;
     this.gui = gui
     this.elementIndex = elemIndex;
+    // this.ease = cubic_ease;
 
     // GUI OBJ to vary parameters
     this.guiObj = {
@@ -45,7 +46,7 @@ export default class Media {
 
     // Adding DEBUG GUI
     this.guiObj = getDebugProperties(gui, this.guiObj, this.back_plane, this.front_plane, this.elementIndex)
-    this.createTimeline()
+    this.createTimeline(cubic_ease)
 
   }
 
@@ -98,22 +99,27 @@ export default class Media {
     // image.src = image_grid;
 
     if (this.renderElement == 0) {
-      image.src = this.img;
+      image.src = image_sample
+      // image.src = this.img;
     } else if (this.renderElement == 1) {
       image.src = image_grid
-    } else if (this.renderElement == 2) {
-      image.src = image_sample
-    } else if (this.renderElement == 3) {
-      image.src = image_sample_1
-    } else if (this.renderElement == 4) {
-      image.src = image_sample_2
-    } else if (this.renderElement == 5) {
-      image.src = image_sample_3
-    } else if (this.renderElement == 6) {
-      image.src = image_sample_4
     }
-
-
+    // if (this.renderElement == 0) {
+    //   image.src = this.img;
+    // } else if (this.renderElement == 1) {
+    //   image.src = image_grid
+    // } else if (this.renderElement == 2) {
+    //   image.src = image_sample
+    // } else if (this.renderElement == 3) {
+    //   image.src = image_sample_1
+    // } else if (this.renderElement == 4) {
+    //   image.src = image_sample_2
+    // } else if (this.renderElement == 5) {
+    //   image.src = image_sample_3
+    // } else if (this.renderElement == 6) {
+    //   image.src = image_sample_4
+    // }
+    //
 
 
     // console.log(Media.count)
@@ -231,9 +237,9 @@ export default class Media {
     this.notch.position.y += 0.423
   }
 
-  createTimeline() {
+  createTimeline(ease) {
 
-    this.tl = animationTimeline(this.front_plane, this.back_plane, this.notch, this.elementIndex, this.guiObj)
+    this.tl = animationTimeline(this.front_plane, this.back_plane, this.notch, this.elementIndex, this.guiObj, ease)
     this.tl.pause()
     // this.tl.paused()
 
@@ -250,10 +256,32 @@ export default class Media {
     }
   }
 
+  // In Media.js
   onClick() {
+    // Reset relevant uniforms to initial values
+    // if (this.front_plane && this.front_plane.program) {
+    //   this.front_plane.program.uniforms.uProgress.value = 0.0001;
+    //   this.front_plane.scale.set(1, 1, 1); // Reset scale
+    //   this.front_plane.position.set(0, 0, 0); // Reset position
+    // }
+    // if (this.back_plane && this.back_plane.program) {
+    //   this.back_plane.program.uniforms.wave_progress_1.value = 0;
+    //   this.back_plane.program.uniforms.wave_progress_2.value = 0;
+    //   this.back_plane.program.uniforms.uRippleProgress1.value = 0;
+    //   this.back_plane.program.uniforms.uRippleProgress2.value = 0;
+    //   this.back_plane.program.uniforms.uRippleProgress3.value = 0;
+    //   this.back_plane.program.uniforms.uRippleWidth.value = 0;
+    //   this.back_plane.program.uniforms.uRippleWave.value = 0;
+    //   this.back_plane.program.uniforms.uTextureStretch.value = 0;
+    //   this.back_plane.program.uniforms.uGlowRadius.value = 0;
+    //   this.back_plane.program.uniforms.unblur_p.value = 0;
+    // }
+    // if (this.notch) {
+    //   this.notch.scale.set(0.13, 0.04, 1); // Reset notch scale
+    // }
 
-    this.tl.restart()
-
+    // Restart the timeline
+    this.tl.restart();
   }
 
   update() {

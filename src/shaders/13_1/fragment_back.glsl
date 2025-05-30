@@ -47,7 +47,7 @@ vec3 gaus_blur(sampler2D uTexture, vec2 uv, vec2 resolution) {
             float weight = exp(-(pow(float(x), 2.0) + pow(float(y), 2.0)) / (2.0 * pow(sigma, 2.0))) / (2.0 * pi * pow(sigma, 2.0));
             gaussSum += textureLod(uTexture, sampleUV, m) * weight;
             weightSum += weight;
-            m = 6.;
+            m = 7.;
         }
     }
 
@@ -110,7 +110,6 @@ uv = vec2(uv.x -  0.012, uv.y);
 // Wave 2 - Distortion Wave 
 
     t = uRippleWave*0.5; // reusing variable t
-    float t1 = uRippleWave*0.27;
 
     // vec2 viewSize = uResolution;
     vec2 viewSize = uPlane;
@@ -129,27 +128,22 @@ uv = vec2(uv.x -  0.012, uv.y);
     float bang_d = 0.0;
 
     if (t >= 0.0) {
-        float aT = t1 - 0.0;
+        float aT = t - 0.0;
         vec2 uv2 = uv_d;
         uv2 -= 0.5;
         uv2.x *= viewSize.x / viewSize.y; 
 
-        float yOff = smoothstep(0.3,0.6,uRippleWave )*uRippleWave*0.5;
         vec2 uv_bang = vec2(uv2.x, uv2.y); 
-        vec2 uv_bang_origin = vec2(uv_bang.x, uv_bang.y - uv_y_dynamic_island_offset  + yOff); 
+        vec2 uv_bang_origin = vec2(uv_bang.x, uv_bang.y - uv_y_dynamic_island_offset); 
         bang_d = (aT * 0.16) / length(uv_bang_origin); 
         float factor = 0.44;
-        float a = smoothstep(0.6,1.0,uRippleWave )*0.02;
-        float b = smoothstep(0.5,1.0,uRippleWave )*0.1;
-        float c = smoothstep(0.6,1.0,uRippleWave )*0.02;
-        float d = smoothstep(0.5,1.0,uRippleWave )*0.1;
-        bang_d = smoothstep(0.07+a/2., 0.05-a/2., bang_d) * smoothstep(0.04-b/2., 0.07 +b/2., bang_d)*factor; 
+        bang_d = smoothstep(0.07, 0.05, bang_d) * smoothstep(0.04, 0.07, bang_d)*factor; 
         float off = 0.7;
         bang_offset += vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * 0.1;
 
         float bang_d2 = ((aT - 0.02) * 0.16) / length(uv_bang_origin); 
-        bang_d2 = smoothstep(0.07+c/2., 0.05-c/2., bang_d2) * smoothstep(0.04-d/2., 0.07 + d/2., bang_d2) * factor ; 
-        bang_offset += vec2(-8.0* off * bang_d2 * uv2.x, -4.0* off * bang_d2 * (uv2.y - 0.4)) * -0.1; 
+        bang_d2 = smoothstep(0.07, 0.05, bang_d2) * smoothstep(0.04, 0.08, bang_d2) * factor ; 
+        bang_offset += vec2(-8.0* off * bang_d2 * uv2.x, -4.0* off * bang_d2 * (uv2.y - 0.4)) * -0.0; 
     }
 
     float bang_fade = smoothstep(0.2, 0.4, uRippleWave);
@@ -187,7 +181,7 @@ uv = vec2(uv.x -  0.012, uv.y);
     }
 
     // Enhance colors with a flash effect based on bang intensity and time
-    texture_color = texture_color * (1.0 + bang_d * 14. * smoothstep(.05, .1, t));
+    texture_color = texture_color * (1.0 + bang_d * 12. * smoothstep(.05, .1, t));
 
     // vec2 distortion_offset = vec2(0.);
     vec3 tex = texture_color.xyz;

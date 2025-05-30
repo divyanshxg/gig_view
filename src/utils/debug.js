@@ -57,7 +57,7 @@ export default function getDebugProperties(gui, guiObj, back_plane, front_plane,
     guiObj = {
       ...guiObj,
       uDistortionIntensity: 0.5,
-      uGlowIntensity: 0.3
+      uGlowIntensity: 0.15
     }
 
     gui.add(guiObj, "uGlowIntensity").min(0.0).max(1).step(0.01).onFinishChange((v) => {

@@ -4,9 +4,9 @@ import GUI from "lil-gui";
 import gsap from 'gsap'
 import Scene from "./Experience/Scene";
 import { Pane } from "tweakpane";
+import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 
 
-const pane = new Pane()
 const gui = new GUI({
   closeFolders: true
 })
@@ -29,7 +29,15 @@ const effects_name = [
   "ripple 3 - chromatic",
 ]
 
+const pane = new Pane({
+})
+pane.registerPlugin(EssentialsPlugin);
+
+let first = true
+
 function run() {
+  let v;
+
   const container = Array.from(document.querySelectorAll(".container"))
   for (let i = 0; i < container.length; i++) {
     html2canvas(container[i].querySelector(".card"), {
@@ -60,8 +68,12 @@ function run() {
 
         const effect = gui.addFolder(`${container[i].dataset.container} - ` + effects_name[container[i].dataset.container])
 
-        const curr_pane = ""
-        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect, pane, i)
+        const curr_pane = `${container[i].dataset.container} - ` + effects_name[container[i].dataset.container]
+
+        let pane_folder;
+
+
+        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, effect, pane_folder, i, v)
         const reset_btn = container[i].querySelector(".reset_anim_btn")
         reset_btn.addEventListener("click", (e) => {
           scene.onTouchDown()

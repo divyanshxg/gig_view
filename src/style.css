@@ -168,3 +168,20 @@ img {
     /* transform: translateX(-50%); */
   }
 }
+
+
+.tp-dfwv {
+  /* This is a common class used by TweakPane */
+  left: 0px !important;
+  top: 0px !important;
+  position: fixed !important;
+
+  /* width: 300px !important; */
+  /* Adjust the value as needed */
+  /* Adjust the value as needed */
+  right: auto !important;
+}
+
+/* body>div.tp-dfwv>div>div.tp-rotv_c>div>div.tp-fldv_c>div>div.tp-lblv_v { */
+/*   width: 200px !important; */
+/* } */
