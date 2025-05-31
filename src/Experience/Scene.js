@@ -1,12 +1,9 @@
-import { back_fragment, front_fragment, back_vertex, front_vertex } from "../utils/shaders.js";
 import Media from "./Media"
 import { Renderer, Camera, Transform, Plane } from 'ogl'
 
 export default class Scene {
-  constructor(container, snapshot_img, index, gui, pane, renderElement, cubic_ease) {
+  constructor(container, snapshot_img, index, gui, renderElement) {
     this.gui = gui
-    this.ease = cubic_ease
-    this.pane = pane
     this.elemIndex = index
     this.renderElement = renderElement;
     this.img = snapshot_img
@@ -34,14 +31,14 @@ export default class Scene {
       antialias: true,
       autoClear: true,
       alpha: true
-
     })
 
     this.gl = this.renderer.gl
-    this.gl.clearColor(0.79607843137, 0.79215686274, 0.74117647058, 0.0)
+    this.gl.clearColor(1., 1., 1., 1.0)
     this.container.appendChild(this.gl.canvas)
   }
 
+  // perspective camera
   createCamera() {
 
     this.fov = 45;
@@ -53,6 +50,7 @@ export default class Scene {
     })
     const distance = 1 / (2 * Math.tan((this.fov * Math.PI / 180) / 2))
 
+    // positioning camera so that plane covers the scene
     this.camera.position.z = distance
 
   }
@@ -61,12 +59,8 @@ export default class Scene {
     this.scene = new Transform()
   }
 
-  updateTextures(img) {
-    if (this.medias) {
-      this.medias.updateTexture(img)
-    }
-  }
 
+  // plane geometry for the effect
   createGeometry() {
     this.planeGeometry = new Plane(this.gl, {
       width: this.containerAR,
@@ -76,6 +70,7 @@ export default class Scene {
     })
   }
 
+
   createMedias() {
     this.medias = new Media({
       renderer: this.renderer,
@@ -83,15 +78,10 @@ export default class Scene {
       geometry: this.planeGeometry,
       img: this.img,
       gl: this.gl,
-      back_fragment: back_fragment[this.elemIndex],
-      front_fragment: front_fragment[this.elemIndex],
-      back_vertex: back_vertex[this.elemIndex],
-      front_vertex: front_vertex[this.elemIndex],
       gui: this.gui,
       elemIndex: this.elemIndex,
       containerAR: this.containerAR,
       renderElement: this.renderElement,
-      cubic_ease: this.ease
       // renderElement : renderE
     })
   }
