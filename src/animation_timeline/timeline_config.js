@@ -60,7 +60,8 @@ export default function getConfig() {
 
     // Shock wave configuration
     back_plane_ripple_wave_duration: 3.5,
-    back_plane_ripple_wave_ease: CustomEase.create("custom", "M0,0 C0.015,0.3 0,0.44 0.16,0.585 0.344,0.749 0.818,1.001 1,1 "),
+    // back_plane_ripple_wave_ease: CustomEase.create("custom", "M0,0 C0.015,0.3 0,0.44 0.16,0.585 0.344,0.749 0.818,1.001 1,1 "),
+    back_plane_ripple_wave_ease: CustomEase.create("custom", "M0,0 C0.015,0.3 0.046,0.507 0.205,0.652 0.389,0.816 0.818,1.001 1,1 "),
     back_plane_ripple_wave_timeline: "start+=2.15",
 
 
