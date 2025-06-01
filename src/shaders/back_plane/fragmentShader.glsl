@@ -85,11 +85,8 @@ vec2 uv = vec2(
 float edgeDamp = smoothstep(0.0, edge, vUv.x) * smoothstep(0.0, edge, vUv.y) * 
                  smoothstep(0.0, edge, 1.0 - vUv.x) * smoothstep(0.0, edge, 1.0 - vUv.y);
 
-
-    
-
-    t = uRippleWave*0.6; // reusing variable t
-    float t1 = uRippleWave*0.27;
+   t = uRippleWave*0.46; // reusing variable t
+    float t1 = uRippleWave*0.26;
 
     // vec2 viewSize = uResolution;
     vec2 viewSize = uPlane;
@@ -108,59 +105,48 @@ float edgeDamp = smoothstep(0.0, edge, vUv.x) * smoothstep(0.0, edge, vUv.y) *
     float bang_d = 0.0;
 
     if (t >= 0.0) {
-
         float aT = t1 - 0.0;
         vec2 uv2 = uv_d;
         uv2 -= 0.5;
         uv2.x *= viewSize.x / viewSize.y; 
 
-        float yOff = smoothstep(0.3,0.6,uRippleWave )*uRippleWave*0.335;
+        float yOff = smoothstep(0.3,0.6,uRippleWave )*uRippleWave*0.4;
+
         vec2 uv_bang = vec2(uv2.x, uv2.y); 
+
         vec2 uv_bang_origin = vec2(uv_bang.x, uv_bang.y - uv_y_dynamic_island_offset  + yOff); 
+
         bang_d = (aT * 0.16) / length(uv_bang_origin); 
+
         float factor = 0.44;
-        float a = smoothstep(0.0,0.6,uRippleWave )*0.03;//shock glow upper edge smoothness factor
-        float b = smoothstep(0.5,1.0,uRippleWave )*0.005;// shockwave glow bottom edge smoothness factor
-        float c = smoothstep(0.6,1.0,uRippleWave )*0.03;
-        float d = smoothstep(0.5,1.0,uRippleWave )*0.005;
 
-        bang_d = smoothstep(0.06+a/2., 0.045-a/2., bang_d) * smoothstep(0.045-b/2., 0.047 +b/2., bang_d)*factor; 
-
+        float a = smoothstep(0.6,1.0,uRippleWave )*0.02;
+        float b = smoothstep(0.5,1.0,uRippleWave )*0.1;
+        float c = smoothstep(0.6,1.0,uRippleWave )*0.02;
+        float d = smoothstep(0.5,1.0,uRippleWave )*0.1;
+        bang_d = smoothstep(0.07+a/2., 0.05-a/2., bang_d) * smoothstep(0.04-b/2., 0.07 +b/2., bang_d)*factor; 
         float off = 0.7;
-
-        // bang_offset += vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * 0.1;
+        bang_offset += vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * 0.06;
 
         float bang_d2 = ((aT - 0.02) * 0.16) / length(uv_bang_origin); 
-
-        bang_d2 = smoothstep(0.048+c/2., 0.042-c/2., bang_d2) * smoothstep(0.042-d/2., 0.048 + d/2., bang_d2) * factor ; 
-
-        bang_offset += vec2(-8.0* off * bang_d2 * uv2.x, -4.0* off * bang_d2 * (uv2.y - 0.4)) * -1.; 
+        bang_d2 = smoothstep(0.07+c/2., 0.05-c/2., bang_d2) * smoothstep(0.04-d/2., 0.07 + d/2., bang_d2) * factor ; 
+        bang_offset += vec2(-8.0* off * bang_d2 * uv2.x, -4.0* off * bang_d2 * (uv2.y - 0.4)) * -0.05; 
     }
 
-    float bang_fade = smoothstep(0.2, 0.4, uRippleWave);
 
-    vec2 small_offset = vec2(0.01);
-
-    vec2 effective_bang_offset = mix(small_offset, bang_offset, bang_fade);
-
-
-    effective_bang_offset *= 1.0 - smoothstep(0.1, 0.8,uRippleWave );
+    vec2 effective_bang_offset = bang_offset;
+    effective_bang_offset *= 1.0 - smoothstep(0.88, 0.95,uRippleWave );
     effective_bang_offset *= edgeDamp;
-    // effective_bang_offset *= 0.;
-
-    
 
     vec2 uv_blast = stretch_uv + effective_bang_offset*(1.0 + uDistortionIntensity);
-    vec2 abertion = vec2(0.0 , effective_bang_offset)*smoothstep(0.3,0.6 ,uRippleWave );
-    // vec2 abertion = bang_offset;
     texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
-    float red_abertion = texture(uTexture , uv_blast + 5. * abertion).r;
-    float green_abertion = texture(uTexture , uv_blast + 10.*abertion).g;
-    float blue_abertion = texture(uTexture , uv_blast - 20.*abertion ).b;
-
-    texture_color.xyz = vec3(red_abertion , green_abertion , blue_abertion);
-    bang_d *= 1.0 -smoothstep(0.6, .75,uRippleWave );
+    vec2 chrome_offset = vec2(0.0 , effective_bang_offset)*smoothstep(0.5,0.7,uRippleWave );
+    float r_aberation = texture(uTexture, uv_blast ).r;
+    float g_aberation = texture(uTexture, uv_blast - 3.*chrome_offset ).g;
+    float b_aberation = texture(uTexture, uv_blast + 3.*chrome_offset ).b;
+    texture_color.xyz = vec3(r_aberation , g_aberation , b_aberation);
+    bang_d *= 1.0 - smoothstep(0.85, 0.95 ,uRippleWave );
     // Apply blur effect where bang is active
     if (bang_d > 0.0) {
         float Pi = 6.28318530718 * 2.0; // Define 2*PI for circular sampling
@@ -186,15 +172,18 @@ float edgeDamp = smoothstep(0.0, edge, vUv.x) * smoothstep(0.0, edge, vUv.y) *
     }
 
     // Enhance colors with a flash effect based on bang intensity and time
-    texture_color = texture_color * (1.0 + bang_d * 20. * smoothstep(.05, .1, t));
+    texture_color = texture_color * (1.0 + bang_d * 8. * smoothstep(.05, .1, t));
+
+
 
     // vec2 distortion_offset = vec2(0.);
     vec3 tex = texture_color.xyz;
-
     vec3 blured = blur(stretch_uv ,uTexture , 0.07);
 
-    vec3 final_texture = mix(tex, blured , 1.0 - unblur_p);
+
+    // vec3 final_texture = mix(tex, blured , 1.0 - unblur_p);
     
+    vec3 final_texture = mix(tex, blured , 1.0 - unblur_p);
     
     // Masking the glow ring
     d_glow *= smoothstep(0.1, 0.6, uGlowRadius);
@@ -206,5 +195,6 @@ float edgeDamp = smoothstep(0.0, edge, vUv.x) * smoothstep(0.0, edge, vUv.y) *
 
     fragColor = vec4( final_color , 1.0);
 
+    // fragColor = vec4( vec3( bang_d2_copy), 1.0);
 }
 
