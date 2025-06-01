@@ -1,6 +1,7 @@
 import vertex_shader from '../../shaders/back_plane/vertexShader.glsl'
 import fragment_shader from '../../shaders/back_plane/fragmentShader.glsl'
 import { Mesh, Program, Vec2 } from 'ogl';
+import GUI from 'lil-gui';
 export default function createBackPlane(gl, scene, geometry, texture, image_dimensions, containerAR) {
 
   ////////////////////////////////////////////
@@ -63,8 +64,20 @@ export default function createBackPlane(gl, scene, geometry, texture, image_dime
       uRippleWave: {
         value: 0
       },
+      uDistortion: {
+        value: 0.09
+      }
     }
   });
+
+  const gui = new GUI()
+  const gui_obj = {
+    uDistortion: 0.09
+  }
+
+  gui.add(gui_obj, "uDistortion").min(0.01).max(0.15).onChange((v) => {
+    program.uniforms.uDistortion.value = v
+  })
 
   const mesh = new Mesh(gl, {
     geometry: geometry,

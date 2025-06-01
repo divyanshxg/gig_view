@@ -5,6 +5,7 @@ import animationTimeline from "../animation_timeline/create_timeline";
 import createNotch from "./Meshes/notch";
 import createFrontPlane from "./Meshes/front_plane";
 import createBackPlane from "./Meshes/back_plane";
+import sampleImage from '../../assets/newSample.jpg'
 
 gsap.registerPlugin(CustomEase)
 
@@ -71,6 +72,7 @@ export default class Media {
 
     };
     image.src = this.img;
+    // image.src = sampleImage
 
   }
 

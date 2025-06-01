@@ -12,7 +12,8 @@ uniform float uGlowRadius;
 uniform float uRippleWave;
 uniform float uTextureStretch;
 
-
+// to be removed 
+uniform float uDistortion; // 0.7
 
 in vec2 vUv;
 out vec4 fragColor;
@@ -125,28 +126,35 @@ float edgeDamp = smoothstep(0.0, edge, vUv.x) * smoothstep(0.0, edge, vUv.y) *
         float c = smoothstep(0.6,1.0,uRippleWave )*0.02;
         float d = smoothstep(0.5,1.0,uRippleWave )*0.1;
         bang_d = smoothstep(0.07+a/2., 0.05-a/2., bang_d) * smoothstep(0.04-b/2., 0.07 +b/2., bang_d)*factor; 
-        float off = 0.7;
-        bang_offset += vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * 0.06;
+        float off = 0.5;
+        bang_offset += vec2(-8.0*off * bang_d * uv2.x, -4.0*off * bang_d * (uv2.y - 0.4)) * uDistortion;
 
         float bang_d2 = ((aT - 0.02) * 0.16) / length(uv_bang_origin); 
+
         bang_d2 = smoothstep(0.07+c/2., 0.05-c/2., bang_d2) * smoothstep(0.04-d/2., 0.07 + d/2., bang_d2) * factor ; 
-        bang_offset += vec2(-8.0* off * bang_d2 * uv2.x, -4.0* off * bang_d2 * (uv2.y - 0.4)) * -0.05; 
+
+        // bang_offset += vec2(-8.0* off * bang_d2 * uv2.x, -4.0* off * bang_d2 * (uv2.y - 0.4)) * -0.05; 
     }
 
 
     vec2 effective_bang_offset = bang_offset;
-    effective_bang_offset *= 1.0 - smoothstep(0.88, 0.95,uRippleWave );
+    effective_bang_offset *= 1.0 - smoothstep(0.84, 0.92,uRippleWave );
     effective_bang_offset *= edgeDamp;
 
     vec2 uv_blast = stretch_uv + effective_bang_offset*(1.0 + uDistortionIntensity);
     texture_color = texture(uTexture, uv_blast); // Sample texture at displaced coords
 
     vec2 chrome_offset = vec2(0.0 , effective_bang_offset)*smoothstep(0.5,0.7,uRippleWave );
+    float die_out = 1.0 - smoothstep(0.85,0.88,uRippleWave );
+    float reduce_abertion = 1.0 - smoothstep(0.75 ,0.85 ,uRippleWave );
     float r_aberation = texture(uTexture, uv_blast ).r;
-    float g_aberation = texture(uTexture, uv_blast - 3.*chrome_offset ).g;
-    float b_aberation = texture(uTexture, uv_blast + 3.*chrome_offset ).b;
+    float g_aberation = texture(uTexture, uv_blast - 1.*reduce_abertion*chrome_offset*die_out ).g;
+    float b_aberation = texture(uTexture, uv_blast - 1.*reduce_abertion*chrome_offset*die_out ).b;
+
     texture_color.xyz = vec3(r_aberation , g_aberation , b_aberation);
+
     bang_d *= 1.0 - smoothstep(0.85, 0.95 ,uRippleWave );
+
     // Apply blur effect where bang is active
     if (bang_d > 0.0) {
         float Pi = 6.28318530718 * 2.0; // Define 2*PI for circular sampling
