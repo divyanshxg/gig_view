@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@tweakpane/plugin-essentials':
-        specifier: ^0.2.1
-        version: 0.2.1(tweakpane@4.0.5)
       gsap:
         specifier: ^3.13.0
         version: 3.13.0

@@ -1,3 +1,4 @@
+// Renders the vertices as it is with appropriate model view projection transformations
 #version 300 es
 precision mediump float;
 in vec2 uv;

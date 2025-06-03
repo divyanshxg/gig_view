@@ -1,4 +1,8 @@
 #version 300 es
+#define BORDER_RADIUS 0.1
+#define CUTOFF_OFFSET 0.46
+// this cutoff offset is the same as the position of the notch
+
 precision mediump float;
 
 //Uniform
@@ -31,7 +35,7 @@ void main() {
 
   // Border Radius
 
-  float uRadius = 0.1;
+  float uRadius = BORDER_RADIUS;
   vec2 p = vUv - 0.5;
   // Scale to plane dimensions
   vec2 b = uPlane * 0.5;
@@ -58,16 +62,17 @@ vec2 uv = vec2(
         vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
     );
 
-// uv = vec2(uv.x - 0, uv.y + 0.00);
 
+// Scaling the texture
   float scaleFactor = mix(1.0, 2.0, uProgress); // Scales from 1x to 2x
   vec2 scaledUv = uv;
   scaledUv.y = uv.y/mix(1.0 , scaleFactor , (vUv.y + (uProgress+0.5)*0.4  ) );
 
   vec3 tex = texture(uTexture , scaledUv ).rgb;
 
+  // This if statement prevents the clipping at the start when no transition is there
   if(uProgress > 0.5){
-    if(vPos.y > (0.45+0.02) ){
+    if(vPos.y > (CUTOFF_OFFSET) ){
       discard;
     }
 

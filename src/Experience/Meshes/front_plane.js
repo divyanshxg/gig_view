@@ -14,7 +14,7 @@ export default function createFrontPlane(gl, scene, geometry, texture, image_dim
   gl.compileShader(vertexShader);
   if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
 
-    console.error(`Vertex shader ${elementIndex} - ${vertexShader} compilation failed:`, gl.getShaderInfoLog(vertexShader));
+    console.error(`Vertex shader  - ${vertexShader} compilation failed:`, gl.getShaderInfoLog(vertexShader));
     return null;
   }
 
@@ -23,7 +23,7 @@ export default function createFrontPlane(gl, scene, geometry, texture, image_dim
   gl.shaderSource(fragmentShader, fragment_shader);
   gl.compileShader(fragmentShader);
   if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-    console.error(`Fragment shader ${elementIndex} - ${fragment_shader} compilation failed:`, gl.getShaderInfoLog(fragmentShader));
+    console.error(`Fragment shader  - ${fragment_shader} compilation failed:`, gl.getShaderInfoLog(fragmentShader));
     return null;
   }
 

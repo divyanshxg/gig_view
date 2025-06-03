@@ -4,7 +4,9 @@ import GUI from "lil-gui";
 import Scene from "./Experience/Scene";
 
 
-const gui = ""
+const gui = new GUI({
+  width: 400
+})
 
 
 function run() {
@@ -38,7 +40,8 @@ function run() {
       imgElement.onload = () => {
 
 
-        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, container[i].dataset.container, gui, i)
+        // Creating a new scene for every container element , in our case it was only one
+        const scene = new Scene(container[i].querySelector(".canvas_container"), imgElement.src, gui)
 
         const reset_btn = container[i].querySelector(".reset_anim_btn")
 

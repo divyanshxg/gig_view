@@ -1,3 +1,4 @@
+// Renders the vertices as it is with appropriate model view projection transformations
 // Vertex Shader
 #version 300 es
 precision highp float;

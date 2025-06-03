@@ -31,6 +31,8 @@ export default function createNotch(gl, scene) {
   ////////////////////////////////////////////
 
   const geo = new Plane(gl)
+
+  // Dimensions of notch
   const plane_dim = new Vec2(0.14, 0.04);
 
   const program = new Program(gl, {
@@ -51,7 +53,6 @@ export default function createNotch(gl, scene) {
   notch.scale.set(plane_dim.x, plane_dim.y, 1)
   notch.setParent(scene)
   notch.position.y += 0.46 // positioning the notch to top
-
 
   return notch
 

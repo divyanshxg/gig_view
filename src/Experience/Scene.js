@@ -2,10 +2,8 @@ import Media from "./Media"
 import { Renderer, Camera, Transform, Plane } from 'ogl'
 
 export default class Scene {
-  constructor(container, snapshot_img, index, gui, renderElement) {
+  constructor(container, snapshot_img, gui) {
     this.gui = gui
-    this.elemIndex = index
-    this.renderElement = renderElement;
     this.img = snapshot_img
     this.container = container
     this.containerAR = this.container.getBoundingClientRect().width / this.container.getBoundingClientRect().height;
@@ -79,10 +77,7 @@ export default class Scene {
       img: this.img,
       gl: this.gl,
       gui: this.gui,
-      elemIndex: this.elemIndex,
       containerAR: this.containerAR,
-      renderElement: this.renderElement,
-      // renderElement : renderE
     })
   }
 

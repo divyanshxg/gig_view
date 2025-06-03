@@ -1,11 +1,11 @@
 import gsap from 'gsap'
 import getConfig from './timeline_config';
 
-export default function animationTimeline(front_plane, back_plane, notch, index, guiConfig, my_ease) {
+export default function animationTimeline(front_plane, back_plane, notch, timeScale) {
 
   let tl = gsap.timeline()
 
-  let timeline_config = getConfig(my_ease)
+  let timeline_config = getConfig()
 
 
   // Scaling the front plane down
@@ -31,6 +31,15 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
     ease: timeline_config.front_position_two_ease
   }, timeline_config.front_position_two_timeline);
 
+
+  // going all the way up
+  tl.to(front_plane.position, {
+    y: 1,
+    duration: timeline_config.front_position_three_duration,
+    ease: timeline_config.front_position_three_ease
+  }, timeline_config.front_position_three_timeline);
+
+
   // Texture Stretching of the front plane
   tl.to(front_plane.program.uniforms.uProgress, {
     value: 2.,
@@ -46,12 +55,6 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
     ease: timeline_config.front_scale_second_ease
   }, timeline_config.front_scale_second_timeline);
 
-  // going all the way up
-  tl.to(front_plane.position, {
-    y: 1,
-    duration: timeline_config.front_position_three_duration,
-    ease: timeline_config.front_position_three_ease
-  }, timeline_config.front_position_three_timeline);
 
 
   // Glow Accumulation Timeline
@@ -98,6 +101,8 @@ export default function animationTimeline(front_plane, back_plane, notch, index,
     duration: timeline_config.notch_scale_duration
   }, timeline_config.notch_scale_timeline)
 
+  console.log(timeScale)
+  tl.timeScale(timeScale)
 
 
   return tl

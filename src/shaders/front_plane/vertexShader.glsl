@@ -1,4 +1,4 @@
-
+// Renders the vertices as it is with appropriate model view projection transformations
 #version 300 es
 precision mediump float;
 in vec2 uv;
@@ -15,5 +15,8 @@ void main() {
   gl_Position = projectionMatrix * modelViewMatrix* vec4(position, 1.0);
 
   vUv = uv;
+  
+
+  // Used to clip the plane when it goes above a threshold
   vPos = (modelViewMatrix*vec4(position,1.0)).xyz;
 }

@@ -18,7 +18,7 @@ void main() {
   
 
   float d = length(normalized_uv);
-  d = sdRoundedBox(normalized_uv , vec2(uPlane.x/uPlane.y,1.) , vec4( 1.1 ));
+  d = sdRoundedBox(normalized_uv , vec2(uPlane.x/uPlane.y,1.) , vec4( 1.0 ));
 
   d =1.0 - step(0.0,d);
 

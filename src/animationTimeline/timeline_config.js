@@ -7,13 +7,14 @@ gsap.registerPlugin(CustomEase)
 export default function getConfig() {
   return {
 
+    // All the animation are started from the start , and have been spaced using a delay like "start+=0.5" means there is 0.5 sec delay in the start of that particular sequence from the moment the entire transition has started
 
     // Front Plane Scale down
     front_scale_first_duration: 1.3,
     front_scale_first_ease: "power1.inOut",
     front_scale_first_timeline: "start",
 
-    // front_position_one_ease: "power2.in",
+    // Going a little up 
     front_position_one_duration: 1.1,
     front_position_one_ease: "power2.in",
     front_position_one_timeline: `start+=0`,
@@ -23,6 +24,10 @@ export default function getConfig() {
     front_position_two_ease: "power2.in",
     front_position_two_timeline: `start+=1.1`,
 
+    //going out of view (up)
+    front_position_three_duration: 2.5 - 1.5,
+    front_position_three_ease: CustomEase.create("custom", "M0,0 C0.076,0 0.317,0.031 0.5,0.2 0.774,0.452 1,0.889 1,1 "),
+    front_position_three_timeline: `start+=1.1`,
 
     // Texture Stretch of the front plane
     front_progress_duration: 2.2 - 1.3,
@@ -35,10 +40,6 @@ export default function getConfig() {
     front_scale_second_timeline: `start+=1.3`,
 
 
-    //going out of view (up)
-    front_position_three_duration: 2.5 - 1.5,
-    front_position_three_ease: CustomEase.create("custom", "M0,0 C0.076,0 0.317,0.031 0.5,0.2 0.774,0.452 1,0.889 1,1 "),
-    front_position_three_timeline: `start+=1.1`,
 
 
     //glow wave
