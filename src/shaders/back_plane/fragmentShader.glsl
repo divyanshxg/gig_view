@@ -151,7 +151,7 @@ vec2 uv = vec2(
 
     vec2 effective_bang_offset = bang_offset;
     // smoothing out the distortionn
-    effective_bang_offset *= 1.0 - smoothstep(0.84, 0.92,effectiveRippleSpeed );
+    effective_bang_offset *= 1.0 - smoothstep(0.84, 1.,uRippleWave);
     // damping out distortion on the edges
     effective_bang_offset *= edgeDamp;
 
@@ -162,7 +162,7 @@ vec2 uv = vec2(
     vec2 chrome_offset = vec2(0.0 , effective_bang_offset)*smoothstep(0.5,0.7,effectiveRippleSpeed );
 
   // smoothing out the chromatic aberration at the end of shockwave
-  float aberration_factor = 1.0 - smoothstep(0.75, 0.88, effectiveRippleSpeed);
+  float aberration_factor = 1.0 - smoothstep(0.75, 0.88, uRippleWave);
 
 
   float r_aberation = texture(uTexture, uv_blast).r;
@@ -172,7 +172,7 @@ vec2 uv = vec2(
     texture_color.xyz = vec3(r_aberation , g_aberation , b_aberation);
 
     // masking the bang wave to smooth out the glow caused by shockwave
-    bang_d *= 1.0 - smoothstep(0.85, 0.95 ,effectiveRippleSpeed );
+    bang_d *= 1.0 - smoothstep(0.85, 1. ,uRippleWave);
 
     // Apply blur effect where bang is active
     if (bang_d > 0.0) {
