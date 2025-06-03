@@ -20,9 +20,6 @@ importers:
       ogl:
         specifier: ^1.0.11
         version: 1.0.11
-      tweakpane:
-        specifier: ^4.0.5
-        version: 4.0.5
       vite-plugin-glsl:
         specifier: ^1.4.0
         version: 1.4.0(rollup@4.39.0)(vite@6.2.5)
@@ -363,11 +360,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@tweakpane/plugin-essentials@0.2.1':
-    resolution: {integrity: sha512-VbFU1/uD+CJNFQdfLXUOLjeG5HyUZH97Ox9CxmyVetg1hqjVun3C83HAGFULyhKzl8tSgii8jr304r8QpdHwzQ==}
-    peerDependencies:
-      tweakpane: ^4.0.0
-
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
@@ -692,9 +684,6 @@ packages:
   text-segmentation@1.0.3:
     resolution: {integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==}
 
-  tweakpane@4.0.5:
-    resolution: {integrity: sha512-rxEXdSI+ArlG1RyO6FghC4ZUX8JkEfz8F3v1JuteXSV0pEtHJzyo07fcDG+NsJfN5L39kSbCYbB9cBGHyuI/tQ==}
-
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -969,10 +958,6 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.39.0':
     optional: true
-
-  '@tweakpane/plugin-essentials@0.2.1(tweakpane@4.0.5)':
-    dependencies:
-      tweakpane: 4.0.5
 
   '@types/estree@1.0.7': {}
 
@@ -1318,8 +1303,6 @@ snapshots:
   text-segmentation@1.0.3:
     dependencies:
       utrie: 1.0.2
-
-  tweakpane@4.0.5: {}
 
   type-check@0.4.0:
     dependencies:
