@@ -35,3 +35,4 @@
 ## NOTE
 After you have come up with a satisfactory values for the speed and uniforms from the debug ui , place those values in the guiObj in the  `src/Experience/Media.js`.so that they get loaded by default.
 Furthermore for the uniform values coming from debug UI , you can remove those uniforms and hardcode those values with the same variable name in the shader `src/shaders/back_plane/fragmentShader.glsl`
+Also don't vary the value to extremes from debug UI as they can cause weird artifacts.
